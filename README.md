@@ -83,11 +83,11 @@ A sample `config.json` is provided in the repository root as well as listed belo
 }
 ```
 
-## Problems?
+## Problems
 
 Please report issues and/or bugs to the standard Github [issue tracker](https://github.com/mackncheesiest/DSSoCEmulator/issues).
 
-## Contributing?
+## Contributing
 
 Feel free to pick up issues/contribute PRs.
 In case anyone wants to know, no formal code of conduct exists, but essentially something along the lines of the [Contributor Covenant](https://www.contributor-covenant.org) is what we're going for here.
