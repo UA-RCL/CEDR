@@ -61,8 +61,11 @@ Usage:
 ```
 
 The only required argument is the positional application directory argument.
-All others will attempt to use a reasonable default values as listed in the help documentation.
-A sample `config.json` is provided in the repository root as well as listed below.
+This directory is the location where shared objects and JSON-based DAGs will be parsed from.
+See [test_app](applications/test_app) along with its associated Makefile for an example of such an application+JSON pair. 
+
+All other arguments will attempt to use reasonable default values as listed in the help documentation.
+A sample `config.json` is provided in the [repository root](config.json) as well as listed below.
 
 ```json
 {
