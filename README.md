@@ -1,6 +1,9 @@
 # DSSoC Emulator
 A Linux userspace runtime framework for executing DAG-based/workflow-based applications on either x86 or ARM
 
+Presentation from FOSDEM20:
+https://fosdem.org/2020/schedule/event/llvm_aut_prog_het_soc/
+
 ## Building
 The main build system of this project is [CMake](https://cmake.org/). 
 It requires CMake >= 3.10 as well as some variant of Clang/Clang++.
