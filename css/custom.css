@@ -1,0 +1,10 @@
+img.profile {
+    width: 125px;
+    height: 125px;
+}
+
+@media (min-width: 992px) {
+    img.img-fluid {
+        max-width: 700px;
+    }
+}
