@@ -1,4 +1,4 @@
-# DSSoC Emulator
+# CEDR - Compiler-integrated Extensible DSSoC Runtime
 A Linux userspace runtime framework for executing DAG-based/workflow-based applications on either x86 or ARM
 
 Presentation from FOSDEM20:
@@ -49,11 +49,11 @@ cmake -DUseLIEF:BOOL=TRUE
 The main usage information can be found by passing in the `-h/--help` flag.
 
 ```
-./dssoc_emulator --help
+./cedr --help
 
 An emulation framework for running DAG-based applications in linux userspace
 Usage:
-  DSSoC Emulator [OPTION...] [APP_DIRECTORY]
+  CEDR [OPTION...] [APP_DIRECTORY]
 
   -l, --log-level arg  Set the logging level (default: INFO)
   -m, --mode arg       Set the operational mode (default: VALIDATION)
@@ -91,9 +91,5 @@ A sample `config.json` is provided in the [repository root](config.json) as well
 
 ## Problems
 
-Please report issues and/or bugs to the standard Github [issue tracker](https://github.com/mackncheesiest/DSSoCEmulator/issues).
+Please report issues and/or bugs to the standard Github [issue tracker](https://github.com/ua-rcl/CEDR/issues).
 
-## Contributing
-
-Feel free to pick up issues/contribute PRs.
-In case anyone wants to know, no formal code of conduct exists, but essentially something along the lines of the [Contributor Covenant](https://www.contributor-covenant.org) is what we're going for here.

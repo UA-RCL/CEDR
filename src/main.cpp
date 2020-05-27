@@ -34,8 +34,8 @@ int main(int argc, char **argv) {
   std::map<std::string, void *> sharedObjectMap;
   std::map<std::string, dag_app *> applicationMap;
 
-  cxxopts::Options options("DSSoC Emulator", "An emulation framework for running DAG-based "
-                                             "applications in linux userspace");
+  cxxopts::Options options("CEDR", "An emulation framework for running DAG-based "
+                                   "applications in linux userspace");
   // clang-format off
   options.add_options()
   ("app_dir", "Directory to load applications from", cxxopts::value<std::string>())

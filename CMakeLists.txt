@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
-project(dssoc_emulator VERSION 1.0
-                               DESCRIPTION "Linux userspace runtime for DAG-based applications and DSSoC emulation"
-                               LANGUAGES CXX)
+project(cedr VERSION 1.0
+             DESCRIPTION "Linux userspace runtime for DAG-based applications and DSSoC emulation"
+             LANGUAGES CXX)
 
 option(BuildARM "Configure build target for ARM-based systems (targets x86 by default)" FALSE)
 option(UseLIEF "Include support for LIEF libraries and reading DAG JSON directly from instrumented application binaries (FALSE by default)" FALSE)
@@ -14,7 +14,7 @@ set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
 
 if(BuildARM)
-    add_executable(dssoc_emulator
+    add_executable(cedr
             src/main.cpp
             src/application.cpp
             src/hardware.cpp
@@ -26,15 +26,15 @@ if(BuildARM)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=armv8-a -target aarch64-linux-gnu -DARM")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--export-dynamic")
 
-    target_include_directories(dssoc_emulator PRIVATE /usr/aarch64-linux-gnu/include/c++/7/aarch64-linux-gnu)
-    target_include_directories(dssoc_emulator PRIVATE /usr/aarch64-linux-gnu/include)
-    target_include_directories(dssoc_emulator PRIVATE extern)
-    target_include_directories(dssoc_emulator PRIVATE src/include)
+    target_include_directories(cedr PRIVATE /usr/aarch64-linux-gnu/include/c++/7/aarch64-linux-gnu)
+    target_include_directories(cedr PRIVATE /usr/aarch64-linux-gnu/include)
+    target_include_directories(cedr PRIVATE extern)
+    target_include_directories(cedr PRIVATE src/include)
 
-    target_link_libraries(dssoc_emulator PRIVATE pthread)
-    target_link_libraries(dssoc_emulator PRIVATE dl)
+    target_link_libraries(cedr PRIVATE pthread)
+    target_link_libraries(cedr PRIVATE dl)
 else()
-    add_executable(dssoc_emulator
+    add_executable(cedr
             src/main.cpp
             src/application.cpp
             src/hardware.cpp
@@ -43,11 +43,11 @@ else()
             src/scheduler.cpp
             src/config_parse.cpp)
 
-    target_include_directories(dssoc_emulator PRIVATE extern)
-    target_include_directories(dssoc_emulator PRIVATE src/include)
+    target_include_directories(cedr PRIVATE extern)
+    target_include_directories(cedr PRIVATE src/include)
 
-    target_link_libraries(dssoc_emulator PRIVATE pthread)
-    target_link_libraries(dssoc_emulator PRIVATE dl)
+    target_link_libraries(cedr PRIVATE pthread)
+    target_link_libraries(cedr PRIVATE dl)
 endif()
 
 if (UseLIEF)
@@ -56,11 +56,11 @@ if (UseLIEF)
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSELIEF")
 
-        target_include_directories(dssoc_emulator PRIVATE ${LIEF_Path}/build/include)
-        target_include_directories(dssoc_emulator PRIVATE ${LIEF_Path}/include)
+        target_include_directories(cedr PRIVATE ${LIEF_Path}/build/include)
+        target_include_directories(cedr PRIVATE ${LIEF_Path}/include)
 
-        target_link_directories(dssoc_emulator PRIVATE ${LIEF_Path}/build)
-        target_link_libraries(dssoc_emulator PRIVATE LIEF)
+        target_link_directories(cedr PRIVATE ${LIEF_Path}/build)
+        target_link_libraries(cedr PRIVATE LIEF)
     endif()
     
 endif()
