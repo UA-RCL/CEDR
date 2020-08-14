@@ -1,0 +1,90 @@
+name: Compilation Checks
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  x86:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: false # Don't need them for our testing
+      - name: Install dependencies
+        run: |
+          sudo bash install_dependencies.sh
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+      - name: Perform build
+        run: |
+          cd build 
+          make -j 6
+  aarch64:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: false # Don't need them for our testing
+      - name: Install dependencies
+        run: |
+          sudo bash install_dependencies.sh
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake -DBuildARM:BOOL=TRUE ..
+      - name: Perform build
+        run: |
+          cd build 
+          make -j 6
+  x86-daemon:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: false # Don't need them for our testing
+      - name: Install dependencies
+        run: |
+          sudo bash install_dependencies.sh
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake -DBuildx86_Daemon:BOOL=TRUE ..
+      - name: Perform build
+        run: |
+          cd build
+          make -j 6
+  aarch64-daemon:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: false # Don't need them for our testing
+      - name: Install dependencies
+        run: |
+          sudo bash install_dependencies.sh
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake -DBuildARM_Daemon:BOOL=TRUE ..
+      - name: Perform build
+        run: |
+          cd build
+          make -j 6
+  dockerfile:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: false # Don't need them for our testing
+      - name: Build the Docker image
+        run: |
+          docker build . --file Dockerfile --tag cedr_dev:$(date +%s)

@@ -1,4 +1,5 @@
-APPDIRS = test_app range_detection pulse_doppler
+#APPDIRS = test_app test_app_2 range_detection pulse_doppler
+APPDIRS = test_app_3
 
 #Prepend x86/arm/clean to each of the appdirs targets so that we can associate different commands with each
 APPDIRS_x86 = $(APPDIRS:%=x86-%)

@@ -12,3 +12,5 @@ void closeSharedObjectHandles(std::map<std::string, void *> &sharedObjectMap);
 void printSharedObjectsFound(std::map<std::string, void *> &sharedObjectMap);
 
 void printApplicationsLoaded(std::map<std::string, dag_app *> &applicationMap);
+
+void initializeHandles(std::map<std::string, void *> &sharedObjectMap, const std::string &app_dir);

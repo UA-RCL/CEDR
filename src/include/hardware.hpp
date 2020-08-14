@@ -3,7 +3,7 @@
 #include "header.hpp"
 #include <pthread.h>
 
-#define MAX_ARGS 20
+#define MAX_ARGS 59
 
 void *hardware_thread(void *ptr);
 

@@ -18,7 +18,7 @@ def instrument_bin(bin_file, dag_file, out_file=None):
             print(f"Failed to parse input binary {bin_file}", file=sys.stderr)
             return 1
 
-        input_bin.add(lief.ELF.Note("DSSoC", lief.ELF.NOTE_TYPES.UNKNOWN, dag_bytes))
+        input_bin.add(lief.ELF.Note("DASH", lief.ELF.NOTE_TYPES.UNKNOWN, dag_bytes))
         input_bin.write(out_file)
     
     return 0

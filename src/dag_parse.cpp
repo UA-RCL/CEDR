@@ -18,8 +18,8 @@
 
 using json = nlohmann::json;
 
-dag_app *parse_dag_file(const std::string &filename, std::map<std::string, void *> &sharedObjectMap,
-                        bool readBinaryDAG) {
+dag_app *parse_dag_file(const std::string &filename, std::map<std::string, void *> &sharedObjectMap, bool readBinaryDAG,
+                        dag_app *app_param) {
 
   json j;
   void *dl_handle;
@@ -63,7 +63,12 @@ dag_app *parse_dag_file(const std::string &filename, std::map<std::string, void 
   j = j["DAG"];
   const int num_nodes = j.size();
 
-  dag_app *myapp = (dag_app *)calloc(1, sizeof(dag_app));
+  dag_app *myapp;
+  if (app_param == nullptr) {
+    myapp = (dag_app *)calloc(1, sizeof(dag_app));
+  } else {
+    myapp = app_param;
+  }
   task_nodes *node_list = (task_nodes *)calloc(num_nodes, sizeof(task_nodes));
 
   auto variable_map = std::map<std::string, variable *>();
@@ -184,6 +189,7 @@ dag_app *parse_dag_file(const std::string &filename, std::map<std::string, void 
     }
 
     node_list[task_id].task_id = task_id;
+    node_list[task_id].app_pnt = myapp;
     strncpy(node_list[task_id].task_name, std::string(app_name + "_" + it1.key()).c_str(),
             sizeof(node_list[task_id].task_name));
 
@@ -239,7 +245,6 @@ dag_app *parse_dag_file(const std::string &filename, std::map<std::string, void 
       std::string platform = std::string((*plat_itr)["name"]);
       std::string runfunc = std::string((*plat_itr)["runfunc"]);
 
-      printf("%d\n", idx);
       node_list[task_id].supported_resources[idx] = (char *)calloc(strlen(platform.c_str()) + 1, sizeof(char));
       strncpy(node_list[task_id].supported_resources[idx], platform.c_str(), strlen(platform.c_str()));
       node_list[task_id].estimated_execution[idx] = (*plat_itr)["nodecost"];
@@ -262,10 +267,7 @@ dag_app *parse_dag_file(const std::string &filename, std::map<std::string, void 
       if ((dl_err = dlerror()) != NULL) {
         LOG_ERROR << "Error while assigning runfunc handle: " << std::endl << std::string(dl_err);
       } else {
-        fprintf(stderr, "For later debugging, this function handle (for task %s) has pointer value: %p\n",
-                it1.key().c_str(), func_handle);
         node_list[task_id].run_funcs[platform] = func_handle;
-        //        node_list[task_id].run_funcs[idx] = func_handle;
       }
     }
     if (!usingCustomTaskIds) {

@@ -12,6 +12,8 @@
 #include <map>
 #include <string>
 
+#define DEFAULT_APP_DIR "applications/target/x86/"
+
 /*
  * Basic handler function that uses backtrace to dump a stacktrace if a
  * particular program fault were to occur (i.e. segmentation faults)
@@ -29,7 +31,7 @@ void segfault_handler(int sig) {
 
 int main(int argc, char **argv) {
   signal(SIGSEGV, segfault_handler);
-  const unsigned int resource_count = CORE_RESOURCE_COUNT + FFT_RESOURCE_COUNT;
+  const unsigned int resource_count = TOTAL_RESOURCE_COUNT;
 
   std::map<std::string, void *> sharedObjectMap;
   std::map<std::string, dag_app *> applicationMap;
@@ -38,10 +40,11 @@ int main(int argc, char **argv) {
                                    "applications in linux userspace");
   // clang-format off
   options.add_options()
-  ("app_dir", "Directory to load applications from", cxxopts::value<std::string>())
+  ("app_dir", "Directory to load applications from", cxxopts::value<std::string>()->default_value(DEFAULT_APP_DIR))
   ("l,log-level", "Set the logging level", cxxopts::value<std::string>()->default_value("INFO"))
   ("m,mode", "Set the operational mode", cxxopts::value<std::string>()->default_value("VALIDATION"))
   ("s,scheduler", "Choose the scheduler to use", cxxopts::value<std::string>()->default_value("SIMPLE"))
+  ("cache-schedules", "Once a node is scheduled, future iterations of that node will use the same decision", cxxopts::value<bool>()->default_value("false"))
   ("c,config", "File to load application configuration from", cxxopts::value<std::string>()->default_value("config.json"))
   ("h,help","Print help")
   ;
@@ -55,6 +58,7 @@ int main(int argc, char **argv) {
     return 0;
   }
   const std::string scheduler = result["scheduler"].as<std::string>();
+  const bool cache_schedules = result["cache-schedules"].as<bool>();
   const std::string config_file = result["config"].as<std::string>();
 
   const std::string log_str = result["log-level"].as<std::string>();
@@ -87,17 +91,16 @@ int main(int argc, char **argv) {
   if (EMULATION_MODE == "PERFORMANCE") {
     const std::map<std::string, std::pair<long long, float>> config_map = parse_performance_config(config_file);
     runPerformanceMode(resource_count, applicationMap, config_map, resource_handle, hardware_thread_handle,
-                       resource_mutex, scheduler);
+                       resource_mutex, scheduler, cache_schedules);
   } else if (EMULATION_MODE == "VALIDATION") {
     const std::map<std::string, unsigned int> config_map = parse_validation_config(config_file);
     runValidationMode(resource_count, applicationMap, config_map, resource_handle, hardware_thread_handle,
-                      resource_mutex, scheduler);
+                      resource_mutex, scheduler, cache_schedules);
   } else {
     LOG_FATAL << "Unrecognized operational mode! Recognized modes are "
                  "PERFORMANCE and VALIDATION";
     exit(1);
   }
-
   cleanupHardware();
   closeSharedObjectHandles(sharedObjectMap);
 }

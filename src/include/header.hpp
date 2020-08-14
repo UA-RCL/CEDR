@@ -1,10 +1,12 @@
 #pragma once
 
+#include <dlfcn.h>
 #include <pthread.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <deque>
 #include <map>
 #include <string>
 #include <vector>
@@ -12,14 +14,23 @@
 #include <plog/Log.h>
 #include <nlohmann/json.hpp>
 
+#define SEC2NANOSEC 1000000000
+#define USEC2NANOSEC 1000
+#define NANOSEC2USEC 1000
+
 #ifdef ARM
 #define CORE_RESOURCE_COUNT 3
-#define FFT_RESOURCE_COUNT 1
+#define FFT_RESOURCE_COUNT 2
+#define MMULT_RESOURCE_COUNT 1
 #else
 #define CORE_RESOURCE_COUNT 3
 // If we're not building for ARM, there are no FFT accelerators
 #define FFT_RESOURCE_COUNT 0
+// If we're not building for ARM, there are no MMULT accelerators
+#define MMULT_RESOURCE_COUNT 0
 #endif
+
+#define TOTAL_RESOURCE_COUNT (CORE_RESOURCE_COUNT + FFT_RESOURCE_COUNT + MMULT_RESOURCE_COUNT)
 
 struct variable_t {
   std::string name;
@@ -33,6 +44,8 @@ typedef struct variable_t variable;
 struct task_nodes_t {
   int task_id;
   int app_id;
+  struct struct_app *app_pnt;
+
   struct task_nodes_t **succ;
   int succ_count;
   struct task_nodes_t **pred;
@@ -55,7 +68,15 @@ struct task_nodes_t {
   int alloc_resource_config_input;
   float *estimated_execution;
 
-  int in_ready_queue;
+#ifdef DAEMON
+  ~task_nodes_t() {
+    free(pred);
+    free(succ);
+    free(supported_resources);
+    free(estimated_execution);
+    args = std::vector<variable *>();
+  }
+#endif
 
   struct task_nodes_t &operator=(const struct task_nodes_t &other) {
     if (this == &other) {
@@ -107,11 +128,26 @@ struct struct_app {
   task_nodes *head_node;
   int app_id;
   int task_count;
+#ifdef DAEMON
+  int completed_task_count;
+#endif
   char app_name[50];
 
   std::map<std::string, variable *> variables;
+#ifdef DAEMON
+  std::map<std::string, void *> sharedObjectMap;
+#endif
 
   unsigned long arrival_time;
+
+#ifdef DAEMON
+  ~struct_app() {
+    free(head_node);
+    for (const auto &entry : sharedObjectMap) {
+      dlclose(entry.second);
+    }
+  }
+#endif
 
   struct struct_app &operator=(const struct struct_app &other) {
     if (this == &other) {
@@ -164,6 +200,8 @@ struct struct_app {
       for (int j = 0; j < other.head_node[i].args.size(); j++) {
         head_node[i].args.push_back(variables[other.head_node[i].args.at(j)->name]);
       }
+
+      head_node[i].app_pnt = this;
     }
     return *this;
   }
@@ -171,11 +209,14 @@ struct struct_app {
 typedef struct struct_app dag_app;
 
 struct struct_running_task {
+  std::deque<task_nodes *> todo_task_dequeue;
+  std::deque<task_nodes *> completed_task_dequeue;
   task_nodes *task;
   int resource_stat;
   char resource_name[50];
   char resource_type[50];
   int resource_config_input;
+  // long long resource_avail_time; // In nanoseconds
 };
 typedef struct struct_running_task running_task;
 

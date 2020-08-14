@@ -56,7 +56,7 @@ void initializeApplications(std::map<std::string, void *> &sharedObjectMap,
 #ifdef USELIEF
       dag_app *this_app = parse_dag_file(full_path.c_str(), sharedObjectMap, true);
 #else
-      dag_app *this_app = parse_dag_file(full_path, sharedObjectMap, false);
+      dag_app *this_app = parse_dag_file(full_path, sharedObjectMap, false, nullptr);
 #endif
       if (this_app == nullptr) {
         LOG_ERROR << "Unable to initialize application associated with " << curr_file;
