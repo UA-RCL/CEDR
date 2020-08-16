@@ -12,15 +12,15 @@ Note: this process involves installing LLVM 9 and it creates symlinks for `clang
 If you have [Docker](https://www.docker.com) available, a development container can be setup that installs all prerequisites as required for both `x86` and `aarch64` cross-compilation development. 
 The container can be pulled with
 ```bash
-docker pull mackncheesiest/cedr_dev:0.0.1
+docker pull mackncheesiest/cedr_dev:latest
 ```
 Alternatively, the container can be built directly with
 ```bash
-docker build --tag cedr_dev:0.0.1 .
+docker build --tag cedr_dev:latest .
 ```
-And once it's complete, run the container from the repository root with the current working directory mounted as follows.
+And once it's complete, run the container from the repository root with the current working directory mounted as follows (prepending `mackncheesiest/` to the image name if using the image from the docker hub).
 ```bash
-docker run -it --rm -v $(pwd):/root/repository cedr_dev:0.0.1 /bin/bash
+docker run -it --rm -v $(pwd):/root/repository cedr_dev:latest /bin/bash
 ```
 With that in place, each of the following build configurations should work out of the box (and if they don't CI is failing 😄)
 
