@@ -18,6 +18,7 @@ install_apt_dependencies_prellvm() {
     software-properties-common \
     curl \
     unzip \
+    libpapi-dev \
     tar
 }
 
