@@ -13,7 +13,7 @@ Paper from IPDPSW - HCW20: [https://arxiv.org/abs/2004.01636](https://arxiv.org/
 If you are on a debian-based system or otherwise have `apt` available (developed on Ubuntu 18.04 LTS), all required packages for cross compilation/etc can be installed through `install_dependencies.sh`.
 Note: this process involves installing LLVM 9 and it creates symlinks for `clang-9`, `clang++-9`, `clang-tidy-9`, and `clang-format-9` as `clang`, `clang++`, `clang-tidy`, and `clang-format` respectively.
 
-If you have [Docker](https://www.docker.com) available, a development container can be setup that installs all prerequisites as required for both `x86` and `aarch64` cross-compilation development. 
+If you have [Docker](https://www.docker.com) available, a [development container](https://hub.docker.com/repository/docker/mackncheesiest/cedr_dev) can be setup that installs all prerequisites as required for both `x86` and `aarch64` cross-compilation development. 
 The container can be pulled with
 ```bash
 docker pull mackncheesiest/cedr_dev:latest
