@@ -96,7 +96,7 @@ void *hardware_thread(void *ptr) {
   return nullptr;
 }
 
-void initializeCPUs(pthread_t *resource_handle, running_task *hardware_thread_handle, pthread_mutex_t *resource_mutex) {
+void initializeCPUs(pthread_t *resource_handle, running_task *hardware_thread_handle, pthread_mutex_t *resource_mutex, bool loosen_thread_permissions) {
 
   const unsigned int resource_count = CORE_RESOURCE_COUNT;
 
@@ -125,13 +125,20 @@ void initializeCPUs(pthread_t *resource_handle, running_task *hardware_thread_ha
 #endif
     pthread_attr_setaffinity_np(&(resource_attr[i]), sizeof(cpu_set_t), &(resource_affinity[i]));
     pthread_attr_setinheritsched(&(resource_attr[i]), PTHREAD_EXPLICIT_SCHED);
-    int ret = pthread_attr_setschedpolicy(&(resource_attr[i]), SCHED_RR); // SCHED_OTHER
+    int ret;
+    if (loosen_thread_permissions) {
+      ret = pthread_attr_setschedpolicy(&(resource_attr[i]), SCHED_OTHER);
+    } else {
+      ret = pthread_attr_setschedpolicy(&(resource_attr[i]), SCHED_RR);
+    }
     if (ret != 0) {
       LOG_FATAL << "Unable to set CPU pthread scheduling policy";
       exit(1);
     }
-    p1[i].sched_priority = 99;                         // COMMENT OUT
-    pthread_attr_setschedparam(&resource_attr[i], p1); // COMMENT OUT
+    if (!loosen_thread_permissions) {
+      p1[i].sched_priority = 99;
+      pthread_attr_setschedparam(&(resource_attr[i]), &p1[i]);
+    }
   }
 
   auto *thread_argument = (pthread_arg *)malloc(resource_count * sizeof(pthread_arg));
@@ -169,7 +176,7 @@ void initializeCPUs(pthread_t *resource_handle, running_task *hardware_thread_ha
 }
 
 #ifdef ARM
-void initializeFFTs(pthread_t *resource_handle, running_task *hardware_thread_handle, pthread_mutex_t *resource_mutex) {
+void initializeFFTs(pthread_t *resource_handle, running_task *hardware_thread_handle, pthread_mutex_t *resource_mutex, bool loosen_thread_permissions) {
 
   const unsigned int resource_count = FFT_RESOURCE_COUNT;
 
@@ -187,13 +194,20 @@ void initializeFFTs(pthread_t *resource_handle, running_task *hardware_thread_ha
     CPU_SET(i + 1, &(resource_affinity[i]));
     pthread_attr_setaffinity_np(&(resource_attr[i]), sizeof(cpu_set_t), &(resource_affinity[i]));
     pthread_attr_setinheritsched(&(resource_attr[i]), PTHREAD_EXPLICIT_SCHED);
-    int ret = pthread_attr_setschedpolicy(&(resource_attr[i]), SCHED_RR); // SCHED_OTHERS
+    int ret;
+    if (loosen_thread_permissions) {
+      ret = pthread_attr_setschedpolicy(&(resource_attr[i]), SCHED_OTHER);
+    } else {
+      ret = pthread_attr_setschedpolicy(&(resource_attr[i]), SCHED_RR);
+    }
     if (ret != 0) {
-      LOG_FATAL << "Unable to set accelerator pthread scheduling policy";
+      LOG_FATAL << "Unable to set FFT pthread scheduling policy";
       exit(1);
     }
-    p1[i].sched_priority = 99;                               // COMMENT OUT
-    pthread_attr_setschedparam(&(resource_attr[i]), &p1[i]); // COMMENT OUT
+    if (!loosen_thread_permissions) {
+      p1[i].sched_priority = 99;
+      pthread_attr_setschedparam(&(resource_attr[i]), &p1[i]);
+    }
   }
 
   for (int i = 0; i < resource_count; i++) {
@@ -232,7 +246,7 @@ void initializeFFTs(pthread_t *resource_handle, running_task *hardware_thread_ha
 }
 
 void initializeMMULTs(pthread_t *resource_handle, running_task *hardware_thread_handle,
-                      pthread_mutex_t *resource_mutex) {
+                      pthread_mutex_t *resource_mutex, bool loosen_thread_permissions) {
   const unsigned int resource_count = MMULT_RESOURCE_COUNT;
 
   // Note: Anything allocated _here_ should use the standard i=0 to MMULT_RESOURCE_COUNT index expressions
@@ -249,13 +263,20 @@ void initializeMMULTs(pthread_t *resource_handle, running_task *hardware_thread_
     CPU_SET(i + 2, &(resource_affinity[i]));
     pthread_attr_setaffinity_np(&(resource_attr[i]), sizeof(cpu_set_t), &(resource_affinity[i]));
     pthread_attr_setinheritsched(&(resource_attr[i]), PTHREAD_EXPLICIT_SCHED);
-    int ret = pthread_attr_setschedpolicy(&(resource_attr[i]), SCHED_RR); // SCHED_OTHERS
+    int ret;
+    if (loosen_thread_permissions) {
+      ret = pthread_attr_setschedpolicy(&(resource_attr[i]), SCHED_OTHER);
+    } else {
+      ret = pthread_attr_setschedpolicy(&(resource_attr[i]), SCHED_RR);
+    }
     if (ret != 0) {
-      LOG_FATAL << "Unable to set accelerator pthread scheduling policy";
+      LOG_FATAL << "Unable to set MMULT pthread scheduling policy";
       exit(1);
     }
-    p1[i].sched_priority = 99;                               // COMMENT OUT
-    pthread_attr_setschedparam(&(resource_attr[i]), &p1[i]); // COMMENT OUT
+    if (!loosen_thread_permissions) {
+      p1[i].sched_priority = 99;
+      pthread_attr_setschedparam(&(resource_attr[i]), &p1[i]);
+    }
   }
 
   for (int i = 0; i < resource_count; i++) {
@@ -295,14 +316,14 @@ void initializeMMULTs(pthread_t *resource_handle, running_task *hardware_thread_
 #endif
 
 void initializeHardware(pthread_t *resource_handle, running_task *hardware_thread_handle,
-                        pthread_mutex_t *resource_mutex) {
+                        pthread_mutex_t *resource_mutex, bool loosen_thread_permissions) {
   LOG_DEBUG << "Performing CPU thread initialization";
-  initializeCPUs(resource_handle, hardware_thread_handle, resource_mutex);
+  initializeCPUs(resource_handle, hardware_thread_handle, resource_mutex, loosen_thread_permissions);
 #ifdef ARM
   LOG_DEBUG << "Performing FFT initialization";
-  initializeFFTs(resource_handle, hardware_thread_handle, resource_mutex);
+  initializeFFTs(resource_handle, hardware_thread_handle, resource_mutex, loosen_thread_permissions);
   LOG_DEBUG << "Performing MMULT initialization";
-  initializeMMULTs(resource_handle, hardware_thread_handle, resource_mutex);
+  initializeMMULTs(resource_handle, hardware_thread_handle, resource_mutex, loosen_thread_permissions);
 #else
   LOG_DEBUG << "Skipping accelerator initialization for non-ARM build";
 #endif

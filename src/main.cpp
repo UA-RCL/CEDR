@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
   ("m,mode", "Set the operational mode", cxxopts::value<std::string>()->default_value("VALIDATION"))
   ("s,scheduler", "Choose the scheduler to use", cxxopts::value<std::string>()->default_value("SIMPLE"))
   ("cache-schedules", "Once a node is scheduled, future iterations of that node will use the same decision", cxxopts::value<bool>()->default_value("false"))
+  ("loosen-thread-permissions", "Loosen permissions requested by avoiding pinning threads to particular CPU cores. Can be used to overcome OS-level permission issues.", cxxopts::value<bool>()->default_value("false"))
   ("c,config", "File to load application configuration from", cxxopts::value<std::string>()->default_value("config.json"))
   ("h,help","Print help")
   ;
@@ -59,6 +60,7 @@ int main(int argc, char **argv) {
   }
   const std::string scheduler = result["scheduler"].as<std::string>();
   const bool cache_schedules = result["cache-schedules"].as<bool>();
+  const bool loosen_thread_permissions = result["loosen-thread-permissions"].as<bool>();
   const std::string config_file = result["config"].as<std::string>();
 
   const std::string log_str = result["log-level"].as<std::string>();
@@ -85,7 +87,7 @@ int main(int argc, char **argv) {
   running_task hardware_thread_handle[resource_count];
   pthread_mutex_t resource_mutex[resource_count];
 
-  initializeHardware(resource_handle, hardware_thread_handle, resource_mutex);
+  initializeHardware(resource_handle, hardware_thread_handle, resource_mutex, loosen_thread_permissions);
 
   const std::string EMULATION_MODE = result["mode"].as<std::string>();
   if (EMULATION_MODE == "PERFORMANCE") {
