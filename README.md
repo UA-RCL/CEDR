@@ -1,7 +1,7 @@
 # CEDR - Compiler-integrated Extensible DSSoC Runtime
 
-![Github CI](https://github.com/UA-RCL/CEDR/workflows/Compilation%20Checks/badge.svg)
-![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/mackncheesiest/cedr_dev)
+[![Github CI](https://github.com/UA-RCL/CEDR/workflows/Compilation%20Checks/badge.svg)](https://github.com/UA-RCL/CEDR/actions?query=workflow%3A%22Compilation+Checks%22)
+[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/mackncheesiest/cedr_dev)](https://hub.docker.com/r/mackncheesiest/cedr_dev/builds)
 
 A linux userspace runtime framework for executing DAG-based/workflow-based applications on either x86 or ARM
 
