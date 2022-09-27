@@ -82,7 +82,7 @@ install_updated_cmake() {
   echo "Installing updated cmake"
   wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null 
   chmod 644 /etc/apt/trusted.gpg.d/kitware.gpg
-  apt-add-repository "deb https://apt.kitware.com/ubuntu/ ${DIST_CODENAME} main"
+  apt-add-repository -y "deb https://apt.kitware.com/ubuntu/ ${DIST_CODENAME} main"
   apt update
   apt install -y cmake
 }
