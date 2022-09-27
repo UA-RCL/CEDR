@@ -1,0 +1,204 @@
+options:
+  parameters:
+    author: ''
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: no_gui
+    hier_block_src_path: '.:'
+    id: range_doppler_gr_cedr
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Not titled yet
+    window_size: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '32000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: vec_len
+  id: variable
+  parameters:
+    comment: ''
+    value: '128'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [271, 12]
+    rotation: 0
+    state: enabled
+- name: blocks_file_source_0
+  id: blocks_file_source
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: matched_filter.bin
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    repeat: 'True'
+    type: complex
+    vlen: vec_len
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [100, 198]
+    rotation: 0
+    state: true
+- name: blocks_file_source_0_0
+  id: blocks_file_source
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: rx_pulses.bin
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    repeat: 'True'
+    type: complex
+    vlen: vec_len
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [100, 329]
+    rotation: 0
+    state: true
+- name: blocks_multiply_xx_0
+  id: blocks_multiply_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: vec_len
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [628, 293]
+    rotation: 0
+    state: true
+- name: cedr_fft_0
+  id: cedr_fft
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    direction: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: vec_len
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [336, 180.0]
+    rotation: 0
+    state: true
+- name: cedr_fft_0_0
+  id: cedr_fft
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    direction: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: vec_len
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [352, 372.0]
+    rotation: 0
+    state: true
+- name: cedr_fft_0_0_0
+  id: cedr_fft
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    direction: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: vec_len
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [824, 364.0]
+    rotation: 0
+    state: true
+- name: zeromq_pub_sink_0
+  id: zeromq_pub_sink
+  parameters:
+    address: tcp://127.0.0.1:50002
+    affinity: ''
+    alias: ''
+    comment: ''
+    hwm: '-1'
+    key: ''
+    pass_tags: 'False'
+    timeout: '100'
+    type: complex
+    vlen: vec_len
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1139, 280]
+    rotation: 0
+    state: true
+
+connections:
+- [blocks_file_source_0, '0', cedr_fft_0, '0']
+- [blocks_file_source_0_0, '0', cedr_fft_0_0, '0']
+- [blocks_multiply_xx_0, '0', cedr_fft_0_0_0, '0']
+- [cedr_fft_0, '0', blocks_multiply_xx_0, '0']
+- [cedr_fft_0_0, '0', blocks_multiply_xx_0, '1']
+- [cedr_fft_0_0_0, '0', zeromq_pub_sink_0, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.4.0-rc1

@@ -1,0 +1,104 @@
+{
+    "AppName": "Vector Add",
+    "SharedObject": "vector_add.so",
+    "Variables": {
+        "x": {
+            "bytes": 8,
+            "is_ptr": false,
+            "ptr_alloc_bytes": 0,
+            "val": []
+        },
+        "y": {
+            "bytes": 8,
+            "is_ptr": false,
+            "ptr_alloc_bytes": 0,
+            "val": []
+        },
+        "z": {
+            "bytes": 8,
+            "is_ptr": false,
+            "ptr_alloc_bytes": 0,
+            "val": []
+        },
+        "num_elem": {
+            "bytes": 8,
+            "is_ptr": false,
+            "ptr_alloc_bytes": 0,
+            "val": []
+        }
+    },
+    "DAG": {
+        "Allocation": {
+            "arguments": ["x", "y", "z", "num_elem"],
+            "predecessors": [],
+            "successors": [{
+                "edgecost": 0,
+                "name": "Initialization"
+            }],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 10.0,
+                    "runfunc": "Allocation"
+                }
+            ]
+        },
+        "Initialization": {
+            "arguments": ["x", "y", "num_elem"],
+            "predecessors": [{
+                "edgecost": 0,
+                "name": "Allocation"
+            }],
+            "successors": [{
+                "edgecost": 0,
+                "name": "Addition"
+            }],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 10.0,
+                    "runfunc": "Initialization"
+                }
+            ]
+        },
+        "Addition": {
+            "arguments": ["x", "y", "z", "num_elem"],
+            "predecessors": [{
+                "edgecost": 0,
+                "name": "Initialization"
+            }],
+            "successors": [{
+                "edgecost": 0,
+                "name": "Print Result"
+            }],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 10.0,
+                    "runfunc": "Vector_Add_CPU"
+                },
+                {
+                    "name": "gpu",
+                    "nodecost": 10.0,
+                    "runfunc": "Vector_Add_GPU",
+                    "shared_object": "vector_add_gpu.so"
+                }
+            ]
+        },
+        "Print Result": {
+            "arguments": ["z", "num_elem"],
+            "predecessors": [{
+                "edgecost": 0,
+                "name": "Addition"
+            }],
+            "successors": [],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 10.0,
+                    "runfunc": "Print_Result"
+                }
+            ]
+        }
+    }
+}

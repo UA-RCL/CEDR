@@ -1,0 +1,23 @@
+{
+    "Worker Threads": {
+        "cpu": 3,
+        "fft": 1,
+        "mmult": 1,
+        "gpu": 1
+    },
+    "Features": {
+        "Cache Schedules": false,
+        "Enable Queueing": true,
+        "Use PAPI": true,
+        "Loosen Thread Permissions": false,
+        "Fixed Periodic Injection": true,
+        "Exit When Idle": true
+    },
+    "PAPI Counters": [
+        "ONE",
+        "TWO",
+        "THREE"
+    ],
+    "Scheduler": "NONEXISTENT",
+    "Random Seed": 5000
+}

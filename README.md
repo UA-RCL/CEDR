@@ -1,28 +1,28 @@
 # CEDR - Compiler-integrated Extensible DSSoC Runtime
 
 [![Github CI](https://github.com/UA-RCL/CEDR/workflows/Compilation%20Checks/badge.svg)](https://github.com/UA-RCL/CEDR/actions?query=workflow%3A%22Compilation+Checks%22)
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/mackncheesiest/cedr_dev)](https://hub.docker.com/r/mackncheesiest/cedr_dev/builds)
 
-A linux userspace runtime framework for executing DAG-based/workflow-based applications on either x86 or ARM
+A linux userspace runtime framework for executing DAG-based/task-based applications
 
-Presentation from FOSDEM20: [https://fosdem.org/2020/schedule/event/llvm_aut_prog_het_soc/](https://fosdem.org/2020/schedule/event/llvm_aut_prog_het_soc/)
+## Publications
 
-Paper from IPDPSW - HCW20: [https://arxiv.org/abs/2004.01636](https://arxiv.org/abs/2004.01636)
+- We had a paper published in the ACM Transactions on Embedded Computing Systems
+    - [arXiv](https://arxiv.org/abs/2204.08962)
+    - [ACM Digital Library](https://dl.acm.org/doi/abs/10.1145/3529257)
+- We had a paper published in the IEEE International Parallel and Distributed Processing Symposium, Heterogeneity in Computing Workshop: 
+    - [arXiv](https://arxiv.org/abs/2004.01636)
+    - [IEEExplore](https://ieeexplore.ieee.org/abstract/document/9150335)
+- We had a presentation at [FOSDEM20](https://fosdem.org/2020/schedule/event/llvm_aut_prog_het_soc/)
 
 ## Build dependencies and the Docker development container
 If you are on a debian-based system or otherwise have `apt` available (developed on Ubuntu 18.04 LTS), all required packages for cross compilation/etc can be installed through `install_dependencies.sh`.
-Note: this process involves installing LLVM 9 and it creates symlinks for `clang-9`, `clang++-9`, `clang-tidy-9`, and `clang-format-9` as `clang`, `clang++`, `clang-tidy`, and `clang-format` respectively.
 
-If you have [Docker](https://www.docker.com) available, a [development container](https://hub.docker.com/r/mackncheesiest/cedr_dev) can be setup that installs all prerequisites as required for both `x86` and `aarch64` cross-compilation development. 
-The container can be pulled with
-```bash
-docker pull mackncheesiest/cedr_dev:latest
-```
-Alternatively, the container can be built directly with
+If you have [Docker](https://www.docker.com) available, a development container can be setup that installs all prerequisites as required for both `x86` and `aarch64` cross-compilation development. 
+The container can be built directly with
 ```bash
 docker build --tag cedr_dev:latest .
 ```
-And once it's complete, run the container from the repository root with the current working directory mounted as follows (prepending `mackncheesiest/` to the image name if using the image from the docker hub).
+And once it's complete, you can run the container from the repository root with the current working directory mounted as follows.
 ```bash
 docker run -it --rm -v $(pwd):/root/repository cedr_dev:latest /bin/bash
 ```
@@ -37,14 +37,11 @@ cd build
 cmake ${OPTIONS} ..
 ```
 
-Depending on the build configuration desired, different options can be specified during CMake configuration. A brief table of configuration options is provided below:
+CEDR can be built to work in two modes: API-based and DAG-based. API-based CEDR is the more "modern" variation and, for new users, it is the approach we would recommend exploring. DAG-based CEDR is an older version, but it also supports some more advanced functionalities with regards to controlling precise parallelism and heterogeneous execution within your applications.
 
-|         |             Standalone          | Daemon                                 |
-|---------|---------------------------------|----------------------------------------|
-| `x86`     | `cmake ..`                      | `cmake -DBuildx86_Daemon:BOOL=TRUE ..` |
-| `aarch64` | `cmake -DBuildARM:BOOL=TRUE ..` | `cmake -DBuildARM_Daemon:BOOL=TRUE ..` |
+Depending on the build configuration desired, you can either build API-based or DAG-based by specifying `-DCEDR_TYPE=API` or `-DCEDR_TYPE=DAG` during your CMake configuration, respectively. By default, it builds the API-based approach if neither argument is specified.
 
-Sidenote: if you require cross compilation and cannot use the packages installed by `install_dependencies.sh` or the Docker container, the toolchain can be specified by updating the `AARCH64-LINUX-GNU-GCC` variable in `CMakeLists.txt`. 
+If you would like to cross compile CEDR, assuming you have all necessary packages installed, that can be done using a toolchain defined in [toolchains](toolchains). To use an existing toolchain, simply specify it during your CMake configuration via `--toolchain=path/to/toolchain.cmake`. If a toolchain you need is not listed, we would recommend, at a minimum, adding a new toolchain file to the repository to handle it that others in the future can leverage. Additionally, you might consider (i) modifying [install_dependencies.sh](install_dependencies.sh) to perhaps handle automatically setting it up and (ii) and adding a quick compilation test for it to [.github/workflows/compile.yml](.github/workflows/compile.yml) so that future commits will test that they can at-least compile using this toolchain.
 
 By default (unless you specify another build system i.e. `ninja`), this will generate a makefile with standard targets (`make`, `make clean`, ...) as well as two custom targets: `make clang-format` and `make clang-tidy`. 
 These options will invoke [clang-format](https://clang.llvm.org/docs/ClangFormat.html) and [clang-tidy](https://clang.llvm.org/extra/clang-tidy/) on the codebase, respectively.
@@ -52,6 +49,8 @@ Clang Format will reformat the codebase to be in line with the guidelines in [.c
 
 ### Miscellaneous CMake Options
 There are a number of additional arguments that can be provided to CMake in order to influence the generated buildsystem:
+
+---
 
 Debug symbols can be included in the build by specifying the build type as DEBUG
 ```bash
@@ -63,67 +62,51 @@ Alternatively, a binary that is built with optimization enabled and lacks debug 
 cmake -DCMAKE_BUILD_TYPE:STRING=RELEASE ...
 ```
 
-Finally, on `x86` builds, experimental support is present for linking with the [LIEF](https://lief.quarkslab.com/) library and reading application DAGs that are embedded in executables using
+---
+
+Support for runtime-based profiling of application nodes via PAPI can be enabled with
 ```bash
-cmake -DUseLIEF:BOOL=TRUE ...
+cmake -DUsePAPI ...
 ```
 
-## Running
+---
 
-An example set of `aarch64` and `x86` ELF binaries are provided in the `test_dag.tar.gz` archive.
-Unzipping reveals `aarch64` and `x86` folders containing the respective JSON DAGs and shared object executables as well as an `input` folder containing input data for these applications.
-When running in either configuration below, ensure that the `input` directory is located in the same directory as your `cedr` executable as executed applications will look for that relative path.
-Also, be aware that on most systems, running with root privileges is required to set all of the required thread attributes. 
-
-### Standalone
-The "standalone" execution mode is useful for brief experiments or conducting simple application case studies.
-It is invoked by building one of the `standalone` options from above and calling the resulting binary as
-
+Support for enabling profiling within CEDR itself (i.e. to find bottlenecks) can be enabled with
 ```bash
-./cedr -c config.json [options] path/to/application/folder
+cmake -DEnableProfiling ...
 ```
+In which case a gcov report will be generated when it runs for post-execution analysis
 
-The full list of options are available with `./cedr -h` or `./cedr --help`, and an example config file is shown below:
-```json
-{
-  "validation_config": {
-    "radar_correlator": 20
-  },
-  "performance_config": {
-    "radar_correlator": {
-      "period": 100,
-      "probability": 0.6
-    }
-  },
-  "trace_config": {
-    "radar_correlator": 50,
-    "radar_correlator": 75,
-    "radar_correlator": 200
-  }
-}
-```
+## Getting Started
 
-In all cases, each application is specified by a name that corresponds with the name provided in its JSON file, but the data afterwards varies in meaning based on the configuration type.
+As mentioned above, there are two variations of CEDR: API-based and DAG-based. Depending on the configuration desired, there are a few different guides that can be followed to get started, each in their own `GettingStarted.*.md` file.
 
-- `"validation_config"`: each application is paired with a number of instances to run
-- `"performance_config"`: each application is paired with an injection period in milliseconds and an injection probability that is compared against a uniform 0-1 random variable at each period
-- `"trace_config"`: each application instance is paired with an absolute time in milliseconds relative to execution start when the application should be injected
+- API-based CEDR: [GettingStarted.API.md](GettingStarted.API.md)
+- Hand-crafted DAG-based CEDR: [GettingStarted.DAG.md](GettingStarted.DAG.md)
 
-### Daemon
-The build for the daemon process creates three binaries: 
- 1. `cedr`: The main binary to schedule incoming DAGs. It is executed as a background process.
+## Running CEDR
+
+Regardless of the approach taken to build CEDR, each process produces effectively the same binaries and are run in the same way.
+
+Across all approaches, the build creates three binaries: 
+ 1. `cedr`: The main binary to schedule incoming applications. It is intended to be executed as a background process.
  2. `sub_dag`: The command binary used to submit applications for execution.
  3. `kill_daemon`: The command binary used to safely terminate the `cedr` process. 
 
-To use the daemon build, begin by starting `cedr` in one shell:
+To submit an application to CEDR, begin by starting `cedr` in one shell:
 ```bash
 ./cedr [options]
 ```
 Submit applications from another shell using:
 ```bash
-./sub_dag -d /absolute/path/to/dag.json -s /absolute/path/to/binary/folder/
+./sub_dag -d /absolute/path/to/dag.json,/absolute/path/to/dag2.json -n [num_instances],[num_instances2]
 ```
 Finally, when experiments are complete, terminate the daemon process using:
 ```bash
 ./kill_daemon
 ```
+## Configuring the CEDR Daemon
+
+The CEDR daemon can be configured using an optional JSON configuration file, with an example in the repo provided as `daemon_config.json`.
+If no configuration file is specified, all values are initialized as specified in the ConfigManager [constructor](src-api/config_manager.cpp).
+If a configuration file is used, then the values specified do not need to exhaustively configure the system -- any unspecified values will be initialized as specified in the constructor.
