@@ -1,0 +1,59 @@
+{
+  "AppName": "mmult_streaming_test",
+  "SharedObject": "mmult_streaming_test.so",
+  "Stream_enable": "double buffer",
+  "Max_stream_frame_count": 1,
+  "Variables": {},
+  "DAG": {
+    "generate_input": {
+      "arguments": [],
+      "predecessors": [],
+      "successors": [
+        {
+          "name": "compute_mmult",
+          "edgecost": 10
+        }
+      ],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "generate_input"
+        }
+      ]
+    },
+    "compute_mmult": {
+      "arguments": [],
+      "predecessors": [{
+        "name": "generate_input",
+        "edgecost": 10
+      }],
+      "successors": [{
+        "name": "check_output",
+        "edgecost": 10
+      }],
+      "platforms": [
+        {
+          "name": "mmult",
+          "nodecost": 10,
+          "runfunc": "compute_mmult"
+        }
+      ]
+    },
+    "check_output": {
+      "arguments": [],
+      "predecessors": [{
+        "name": "compute_mmult",
+        "edgecost": 10
+      }],
+      "successors": [],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "check_output"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "AppName": "fft_streaming_test",
+  "SharedObject": "fft_streaming_test.so",
+  "Stream_enable": "double buffer",
+  "Max_stream_frame_count": 20,
+  "Variables": {},
+  "DAG": {
+    "generate_input": {
+      "arguments": [],
+      "predecessors": [],
+      "successors": [
+        {
+          "name": "compute_fft",
+          "edgecost": 10
+        }
+      ],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "generate_input"
+        }
+      ]
+    },
+    "compute_fft": {
+      "arguments": [],
+      "predecessors": [{
+        "name": "generate_input",
+        "edgecost": 10
+      }],
+      "successors": [{
+        "name": "check_output",
+        "edgecost": 10
+      }],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "compute_fft_cpu"
+        },
+        {
+          "name": "fft",
+          "nodecost": 10,
+          "runfunc": "compute_fft_accel"
+        }
+      ]
+    },
+    "check_output": {
+      "arguments": [],
+      "predecessors": [{
+        "name": "compute_fft",
+        "edgecost": 10
+      }],
+      "successors": [],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "check_output"
+        }
+      ]
+    }
+  }
+}

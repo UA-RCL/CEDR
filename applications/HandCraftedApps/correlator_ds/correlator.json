@@ -1,0 +1,164 @@
+{ 
+    "AppName": "correlator",
+    "SharedObject": "correlator.so",
+    "Stream_enable": "double buffer",
+    "Max_stream_frame_count": 20,
+    "Variables": {
+        
+    },
+    "DAG": {
+        "RD_head_node": {
+            "arguments": [],
+            "predecessors": [],
+            "successors": [
+                {
+                    "name": "RD_LFM",
+                    "edgecost": 10
+                },
+                {
+                    "name": "RD_FFT0",
+                    "edgecost": 10
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 10,
+                    "runfunc": "RD_head_node"
+                }
+            ]
+        },
+        "RD_LFM": {
+            "arguments": [],
+            "predecessors": [
+
+                {
+                    "name": "RD_head_node",
+                    "edgecost": 10
+                }
+		],
+            "successors": [
+                {
+                    "name": "RD_FFT1",
+                    "edgecost": 10
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 5,
+                    "runfunc": "RD_LFM"
+                }
+            ]
+        },
+        "RD_FFT0": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "RD_head_node",
+                    "edgecost": 10
+                }
+            ],
+            "successors": [
+                {
+                    "name": "RD_MUL",
+                    "edgecost": 30
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 7,
+                    "runfunc": "RD_FFT0"
+                }
+            ]
+        },
+        "RD_FFT1": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "RD_LFM",
+                    "edgecost": 10
+                }
+            ],
+            "successors": [
+                {
+                    "name": "RD_MUL",
+                    "edgecost": 30
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 7,
+                    "runfunc": "RD_FFT1"
+                }
+            ]
+        },
+        "RD_MUL": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "RD_FFT1",
+                    "edgecost": 30
+                },
+                {
+                    "name": "RD_FFT0",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [
+                {
+                    "name":"RD_IFFT",
+                    "edgecost": 30
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "RD_MUL"
+                }
+            ]
+        },
+        "RD_IFFT": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "RD_MUL",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [
+                {
+                    "name": "RD_MAX",
+                    "edgecost": 30
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "RD_IFFT"
+                }
+            ]
+        },
+        "RD_MAX": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "RD_IFFT",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "RD_MAX"
+                }
+            ]
+        }
+    }
+}

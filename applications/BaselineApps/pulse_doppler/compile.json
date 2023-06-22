@@ -1,0 +1,35 @@
+{
+	"Build": {
+		"Commands": "make",
+		"LFLAGS":  {
+			"general":["-lm -I/mnt/nobackup-09/Dash/Sources/include/"]
+		}
+	},
+
+	"Run": {
+		"Variables": {
+			"a": { 
+				"Value": "256"
+			},
+			"b": { 
+				"Value":"128"
+			},
+			"c": { 
+				"Value": "1.27e-4"
+			}
+		},
+		"Commands": {
+			"general":[""],
+			"pulse_doppler": ["./pulse_doppler.bc %a %b %c"]
+		}
+	},
+	"User": {
+		"Author": "Yukang Fu",
+		"Application": ["Pulse-Doppler Radar"],
+		"Libraries": ["FFTW"],
+		"Path": "./pulse_doppler",
+		"Comments": ["Finds the range (or time-delay) and velocity (or Doppler frequency) of a radar target"],
+		"Date": "08/13/2019"
+	}
+}
+

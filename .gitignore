@@ -76,3 +76,11 @@ config.json
 trace_time.txt
 e2e_exe_time.txt
 applications/target/*
+
+# Intermediate files that result from software compilation
+applications/TraceAtlasApps/**/*.ll
+applications/TraceAtlasApps/**/*.json
+applications/TraceAtlasApps/**/*.trc
+
+*.ll
+*.trc

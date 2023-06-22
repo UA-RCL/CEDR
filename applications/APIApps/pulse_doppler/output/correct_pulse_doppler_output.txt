@@ -1,0 +1,1 @@
+Doppler shift = 62.000124, time delay = 0.000038

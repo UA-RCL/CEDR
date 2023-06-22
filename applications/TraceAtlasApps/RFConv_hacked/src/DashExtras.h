@@ -1,0 +1,8 @@
+//
+// Created by jmack2545 on 3/24/20.
+//
+
+#ifndef TRACEATLAS_DASHEXTRAS_H
+#define TRACEATLAS_DASHEXTRAS_H
+
+#endif //TRACEATLAS_DASHEXTRAS_H

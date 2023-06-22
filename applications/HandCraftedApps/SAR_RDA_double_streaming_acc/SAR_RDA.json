@@ -1,0 +1,189 @@
+{ 
+    "AppName": "SAR_RDA",
+    "SharedObject": "SAR_RDA-aarch64.so",
+    "Stream_enable": "double buffer",
+    "Max_stream_frame_count": 20,
+    "Variables": {
+        
+    },
+    "DAG": {
+        "SAR_node_head": {
+            "arguments": [],
+            "predecessors": [],
+            "successors": [
+                {
+                    "name": "SAR_LFM_1",
+                    "edgecost": 10
+                },
+				{
+                    "name": "SAR_LFM_2",
+                    "edgecost": 10
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 10,
+                    "runfunc": "SAR_node_head"
+                }
+            ]
+        },
+        "SAR_LFM_1": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "SAR_node_head",
+                    "edgecost": 10
+                }
+		],
+            "successors": [
+                {
+                    "name": "SAR_node_1",
+                    "edgecost": 10
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 5,
+                    "runfunc": "SAR_LFM_1"
+                }
+            ]
+        },
+		"SAR_LFM_2": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "SAR_node_head",
+                    "edgecost": 10
+                }
+		],
+            "successors": [
+                {
+                    "name": "SAR_node_1",
+                    "edgecost": 10
+                },
+				{
+                    "name": "SAR_node_3",
+                    "edgecost": 10
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 5,
+                    "runfunc": "SAR_LFM_2"
+                }
+            ]
+        },
+		
+		
+        "SAR_node_1": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "SAR_LFM_1",
+                    "edgecost": 10
+                },
+				{
+                    "name": "SAR_LFM_2",
+                    "edgecost": 10
+                }
+            ],
+            "successors": [
+                {
+                    "name": "SAR_node_2",
+                    "edgecost": 30
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 7,
+                    "runfunc": "SAR_node_1_cpu"
+                },
+				{
+                    "name": "fft",
+                    "nodecost": 7,
+                    "runfunc": "SAR_node_1_acc"
+                }
+            ]
+        },
+        "SAR_node_2": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "SAR_node_1",
+                    "edgecost": 10
+                }
+            ],
+            "successors": [
+                {
+                    "name": "SAR_node_3",
+                    "edgecost": 30
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 7,
+                    "runfunc": "SAR_node_2_cpu"
+                },
+				{
+                    "name": "fft",
+                    "nodecost": 7,
+                    "runfunc": "SAR_node_2_acc"
+                }
+            ]
+        },
+        
+        "SAR_node_3": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "SAR_node_2",
+                    "edgecost": 30
+                },
+				{
+                    "name": "SAR_LFM_2",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [
+                {
+                    "name": "SAR_node_4",
+                    "edgecost": 30
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "SAR_node_3_cpu"
+                },
+				{
+                    "name": "fft",
+                    "nodecost": 7,
+                    "runfunc": "SAR_node_3_acc"
+                }
+            ]
+        },
+        "SAR_node_4": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "SAR_node_3",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "SAR_node_4"
+                }
+            ]
+        }
+    }
+}
