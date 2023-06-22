@@ -1,0 +1,68 @@
+{ 
+    "AppName": "fft_acc_ds",
+    "SharedObject": "fft_acc_ds.so",
+    "Stream_enable": "double buffer",
+    "Max_stream_frame_count": 5,
+    "Variables": {
+        
+    },
+    "DAG": {
+        "FFT_head_node": {
+            "arguments": [],
+            "predecessors": [],
+            "successors": [
+                {
+                    "name": "FFT_accel",
+                    "edgecost": 10
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 10,
+                    "runfunc": "FFT_head_node"
+                }
+            ]
+        },
+        "FFT_accel": {
+            "arguments": [],
+            "predecessors": [
+
+                {
+                    "name": "FFT_head_node",
+                    "edgecost": 10
+                }
+		        ],
+            "successors": [
+                {
+                    "name": "FFT_output",
+                    "edgecost": 10
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 5,
+                    "runfunc": "FFT_accel"
+                }
+            ]
+        },
+        "FFT_output": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "FFT_accel",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "FFT_output"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,297 @@
+{ 
+    "AppName": "temporal_mitigation",
+    "SharedObject": "temporal_mitigation.so",
+    "Stream_enable": "double buffer",
+    "Max_stream_frame_count": 5,
+    "Variables": {
+        
+    },
+    "DAG": {
+        "head_node": {
+            "arguments": [],
+            "predecessors": [],
+            "successors": [
+                {
+                    "name": "z_buffer",
+                    "edgecost": 10
+                },
+                {
+                    "name": "mmult_Z",
+                    "edgecost": 10
+                },
+                {
+                    "name": "hermitian",
+                    "edgecost": 10
+                },
+                {
+                    "name": "mmult_S",
+                    "edgecost": 10
+                },
+                {
+                    "name": "s_buffer",
+                    "edgecost": 10
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 10,
+                    "runfunc": "TM_head_node"
+                }
+            ]
+        },
+        "z_buffer": {
+            "arguments": [],
+            "predecessors": [
+
+                {
+                    "name": "head_node",
+                    "edgecost": 10
+                }
+		],
+            "successors": [
+                {
+                    "name": "msub",
+                    "edgecost": 20
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 5,
+                    "runfunc": "TM_Z_buffer"
+                }
+            ]
+        },
+        "s_buffer": {
+            "arguments": [],
+            "predecessors": [
+
+                {
+                    "name": "head_node",
+                    "edgecost": 10
+                }
+		],
+            "successors": [
+                {
+                    "name": "mmult64",
+                    "edgecost": 20
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 5,
+                    "runfunc": "TM_S_buffer"
+                }
+            ]
+        },
+        "mmult_Z": {
+            "arguments": [],
+            "predecessors": [
+
+                {
+                    "name": "head_node",
+                    "edgecost": 10
+                },
+                {
+                    "name": "hermitian",
+                    "edgecost": 10
+                }
+		],
+            "successors": [
+                {
+                    "name": "mmult4",
+                    "edgecost": 20
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 5,
+                    "runfunc": "TM_mmult_Z"
+                }
+            ]
+        },
+        "hermitian": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "head_node",
+                    "edgecost": 10
+                }
+            ],
+            "successors": [
+                {
+                    "name": "mmult_Z",
+                    "edgecost": 30
+                },
+                {
+                    "name": "mmult_S",
+                    "edgecost": 30
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 7,
+                    "runfunc": "TM_hermitian"
+                }
+            ]
+        },
+        "mmult_S": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "hermitian",
+                    "edgecost": 30
+                },
+                {
+                    "name": "head_node",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [
+                {
+                    "name": "inverse",
+                    "edgecost": 30
+                }
+            ],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "TM_mmult_S"
+                }
+            ]
+        },
+        "mmult4": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "mmult_Z",
+                    "edgecost": 30
+                },
+                {
+                    "name": "inverse",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [
+
+                {
+                    "name": "mmult64",
+                    "edgecost": 30
+                }
+
+		],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "TM_mmult4"
+                }
+            ]
+        },
+        "inverse": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "mmult_S",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [
+
+                {
+                    "name": "mmult4",
+                    "edgecost": 30
+                }
+
+		],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "TM_inverse"
+                }
+            ]
+        },
+        "mmult64": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "s_buffer",
+                    "edgecost": 30
+                },
+                {
+                    "name": "mmult4",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [
+
+                {
+                    "name": "msub",
+                    "edgecost": 30
+                }
+
+		],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "TM_mmult64"
+                }
+            ]
+        },
+        "msub": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "z_buffer",
+                    "edgecost": 30
+                },
+                {
+                    "name": "mmult64",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [
+
+                {
+                    "name": "display_result",
+                    "edgecost": 30
+                }
+
+		],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "TM_msub"
+                }
+            ]
+        },
+        "display_result": {
+            "arguments": [],
+            "predecessors": [
+                {
+                    "name": "msub",
+                    "edgecost": 30
+                }
+            ],
+            "successors": [],
+            "platforms": [
+                {
+                    "name": "cpu",
+                    "nodecost": 12,
+                    "runfunc": "TM_display_result"
+                }
+            ]
+        }
+
+
+
+    }
+}

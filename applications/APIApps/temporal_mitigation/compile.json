@@ -1,0 +1,25 @@
+{
+    "Build": {
+        "Commands": "make",
+        "LFLAGS":  {
+            "general":["-I/mnt/nobackup-09/Dash/Sources/include/"]
+        }
+    },
+
+    "Run": {
+        "Variables": {
+        },
+        "Commands": {
+            "general":["./temporal_mitigation.bc"]
+        }
+    },
+    "User": {
+        "Author": "Saquib Siddiqui",
+        "Application": ["Temporal Mitigation"],
+        "Libraries": [],
+        "Path": "./temporal_mitigation.bc",
+        "Comments": ["Performs Temporal Mitigation"],
+        "Date": "02/10/2020"
+    }
+}
+

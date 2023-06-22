@@ -1,0 +1,75 @@
+LIB_DIR=$(DASH_ROOT)/alib/
+
+LIBRARIES=\
+$(LIB_DIR)libgsl.a\
+$(LIB_DIR)libgslcblas.a\
+$(LIB_DIR)libfftw3.a\
+
+LDFLAGS += -lm -lpthread
+
+CFLAGS += -DDASH_DATA=\"$(DASH_DATA)\"
+
+INC=src/
+INC_PARAMS=$(foreach d, $(INC), -I$d)
+
+INCLUDE=$(DASH_ROOT)/include/
+src/main.c
+src/wifi/baseband_lib.c
+src/wifi/channel_Eq.c
+src/wifi/channel_Eq_initialize.c
+src/wifi/channel_Eq_terminate.c 
+src/wifi/crc.c
+src/wifi/CyclicPrefix.c
+src/wifi/datatypeconv.c
+src/wifi/decode.c
+src/wifi/detection.c
+src/wifi/diag.c
+src/common/dma.c
+src/wifi/equalizer.c
+src/wifi/fft.c
+src/wifi/fft_hs.c
+src/common/fft_hwa.c
+src/wifi/interleaver_deintleaver.c
+src/wifi/pilot.c
+src/wifi/Preamble_ST_LG.c
+src/wifi/qpsk_Mod_Demod.c
+src/wifi/rdivide.c
+src/wifi/rfInf.c
+src/wifi/rtGetInf.c
+src/wifi/rtGetNaN.c
+src/wifi/rt_nonfinite.c
+src/wifi/RX.c
+src/wifi/scrambler_descrambler.c
+src/wifi/txData.c
+src/wifi/viterbi.c
+src/wifi/TX.c
+src/common/log_data.c
+src/temporal_mitigation/adjoint.cpp
+src/temporal_mitigation/alternateinverse.cpp
+src/temporal_mitigation/determinant.cpp
+src/temporal_mitigation/display.cpp
+src/temporal_mitigation/divide.cpp
+src/temporal_mitigation/getcofactor.cpp
+src/temporal_mitigation/hermitian.cpp
+src/temporal_mitigation/imagpart.cpp
+src/temporal_mitigation/inverse.cpp
+src/temporal_mitigation/mmadd.cpp
+src/temporal_mitigation/mmult.cpp
+src/temporal_mitigation/mmult4.cpp
+src/temporal_mitigation/mmult64.cpp
+src/temporal_mitigation/mmultiply.cpp
+src/temporal_mitigation/msub.cpp
+src/temporal_mitigation/realpart.cpp
+src/temporal_mitigation/scalableinverse.cpp
+src/range_detection/range_detection.c
+
+objects ?= $(SRC) $(SRC1) $(SRC2) $(SRC3) $(SRC4) $(SRC5) $(SRC6) $(SRC7) $(SRC8) $(SRC9) $(SRC10) $(SRC11) $(SRC12) $(SRC13) $(SRC14) $(SRC16) $(SRC17) $(SRC18) $(SRC19) $(SRC20) $(SRC21) $(SRC22) $(SRC23) $(SRC24) $(SRC25) $(SRC26) $(SRC27) $(SRC28) $(SRC29) $(SRC30) $(SRC33) $(SRC34) $(SRC35) $(SRC36) $(SRC37) $(SRC38) $(SRC39) $(SRC40) $(SRC41) $(SRC42) $(SRC43) $(SRC44) $(SRC45) $(SRC46) $(SRC47) $(SRC48) $(SRC49) $(SRC50) $(SRC51)
+
+rf_conv.bc : $(objects)
+	$(CC) -I$(INCLUDE) -o rf_conv.bc $(objects) $(LIBRARIES) $(LDFLAGS) $(CFLAGS) -DWIFI_RX -DWIFI_TX -DTEMP_MIT -DRANGE_DETECTION -DNUM_FRAMES=1
+
+.PHONY: clean
+
+clean:
+
+	rm -rf *.bc *.native *.tr*

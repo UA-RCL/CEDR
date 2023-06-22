@@ -1,0 +1,26 @@
+name: x86 Unit Tests
+
+on:
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master, dev ]
+
+jobs:
+  x86:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: false # Don't need them for our testing
+      - name: Install dependencies
+        run: |
+          sudo bash install_dependencies.sh
+      - name: Build test runner
+        run: |
+          cd test
+          make
+      - name: Execute test runner
+        run: |
+          cd test
+          ./test-runner

@@ -1,0 +1,26 @@
+{
+	"Worker Threads": {
+		"cpu": 3,
+		"fft": 1,
+		"mmult": 0
+	},
+	"Features": {
+		"Cache Schedules": false,
+		"Enable Queueing": true,
+		"Use PAPI": true,
+		"Loosen Thread Permissions": false,
+		"Fixed Periodic Injection": true,
+		"Exit When Idle": true
+	},
+	"PAPI Counters": [
+		"perf::INSTRUCTIONS",
+		"perf::CYCLES",
+		"perf::BRANCHES",
+		"perf::BRANCH-MISSES",
+		"perf::L1-DCACHE-LOADS",
+		"perf::L1-DCACHE-LOAD-MISSES"
+	],
+	"Scheduler": "SIMPLE",
+	"Random Seed": 0
+}
+

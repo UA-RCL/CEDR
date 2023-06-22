@@ -11,10 +11,14 @@ FROM ubuntu:18.04
 #WORKDIR /home/user
 WORKDIR /root
 
+# Baseline stuff that would basically be on any actual user's machine but not many barebones containers
+RUN apt update && apt install -y software-properties-common lsb-release wget
+
 COPY install_dependencies.sh /
 RUN chmod u+x /install_dependencies.sh && \
   /install_dependencies.sh && \
   rm /install_dependencies.sh
+
 WORKDIR /root/repository
 
 #VOLUME /home/user/repository

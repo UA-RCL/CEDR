@@ -1,0 +1,79 @@
+{
+  "AppName": "thread_local",
+  "SharedObject": "thread_local.so",
+  "Variables": {},
+  "DAG": {
+    "0": {
+      "arguments": [],
+      "predecessors": [],
+      "successors": [],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "node_0"
+        }
+      ]
+    },
+    "1": {
+      "arguments": [],
+      "predecessors": [],
+      "successors": [],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "node_0"
+        }
+      ]
+    },
+    "2": {
+      "arguments": [],
+      "predecessors": [],
+      "successors": [],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "node_0"
+        }
+      ]
+    },
+    "3": {
+      "arguments": [],
+      "predecessors": [],
+      "successors": [],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "node_0"
+        }
+      ]
+    },
+    "4": {
+      "arguments": [],
+      "predecessors": [],
+      "successors": [],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "node_0"
+        }
+      ]
+    },
+    "5": {
+      "arguments": [],
+      "predecessors": [],
+      "successors": [],
+      "platforms": [
+        {
+          "name": "cpu",
+          "nodecost": 10,
+          "runfunc": "node_0"
+        }
+      ]
+    }
+  }
+}

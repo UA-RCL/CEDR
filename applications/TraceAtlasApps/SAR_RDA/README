@@ -1,0 +1,7 @@
+To run as a standalone binary:
+
+- make standalone
+
+- run with ./SAR_RDA.standalone 256 512 150 0 50 10000 500 2.5e-6 2e13 5000 0.0566
+
+- Observe the output image in ./SAR_RDA-output.txt

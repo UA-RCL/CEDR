@@ -1,6 +1,8 @@
 """
 Basic implementation of Gantt chart plotting using Matplotlib
 Taken from https://sukhbinder.wordpress.com/2016/05/10/quick-gantt-chart-with-matplotlib/ and adapted as necessary (i.e. removed Date logic, etc)
+
+Baseline implementation for use with non-daemon CEDR, non-streaming execution
 """
 
 import matplotlib.pyplot as plt

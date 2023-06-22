@@ -1,0 +1,34 @@
+#########################################################################
+How to run the code on Linux & MAC terminal 
+#######################################################################
+
+
+1. Compile the code
+
+	Go to Build Directory and use make command to compile the code. 
+
+	Once code is compiled, three binaries will be generated - WIFI-TX, WIFI-RX and WIFI-CH
+
+2. How to Run the object file
+
+	./WIFI-XX  
+
+	XX- will be TX,RX or CH. 
+
+
+Note: 
+
+	Channel Effects:
+		 	channel effects to be considered, open the common.h (src/common.h) and uncomment the #define AWGN_channel 1 or #define Rayliegh_channel 1 line and compile the code. 
+	
+	Over Air: 
+		uncomment WIRELESS MACRO 
+	
+	Wired Test: 
+		Uncomment FILE_TX_RX MACRO
+
+	 	
+
+	
+
+
