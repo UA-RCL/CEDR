@@ -73,41 +73,8 @@ jobs:
           cd build-daemon-aarch64
           cmake -DCEDR_TYPE=DAG --toolchain ../toolchains/aarch64-linux-gnu.toolchain.cmake ..
           cmake --build .
-  ubu18-04:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: false # Don't need them for our testing
-      - name: Install dependencies
-        run: |
-          sudo bash install_dependencies.sh
-      - name: Perform x86 API-based build
-        run: |
-          mkdir build-api-x86
-          cd build-api-x86
-          cmake -DCEDR_TYPE=API ..
-          cmake --build .
-      - name: Perform aarch64 API-based build
-        run: |
-          mkdir build-api-aarch64
-          cd build-api-aarch64
-          cmake -DCEDR_TYPE=API --toolchain ../toolchains/aarch64-linux-gnu.toolchain.cmake ..
-          cmake --build .
-      - name: Perform x86 DAG-based build
-        run: |
-          mkdir build-daemon-x86
-          cd build-daemon-x86
-          cmake -DCEDR_TYPE=DAG ..
-          cmake --build .
-      - name: Perform aarch64 DAG-based build
-        run: |
-          mkdir build-daemon-aarch64
-          cd build-daemon-aarch64
-          cmake -DCEDR_TYPE=DAG --toolchain ../toolchains/aarch64-linux-gnu.toolchain.cmake ..
-          cmake --build .
   dockerfile:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
         with:
