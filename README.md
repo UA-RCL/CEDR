@@ -1,11 +1,11 @@
 # CEDR - a Compiler-integrated Extensible DSSoC Runtime
 
 [![Github CI](https://github.com/UA-RCL/CEDR/workflows/Compilation%20Checks/badge.svg)](https://github.com/UA-RCL/CEDR/actions?query=workflow%3A%22Compilation+Checks%22)
-[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/mackncheesiest/cedr_dev)](https://hub.docker.com/r/mackncheesiest/cedr_dev/builds)
+<!--[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/mackncheesiest/cedr_dev)](https://hub.docker.com/r/mackncheesiest/cedr_dev/builds)-->
 
 ## Publications
 
-See our list of publications on [the project website](https://ua-rcl.github.io/CEDR/#publications)
+See our list of publications on [the project website](https://ua-rcl.github.io/projects/cedr/)
 
 ## Build dependencies and the Docker development container
 If you are on a debian-based system or otherwise have `apt` available, all required packages for cross compilation/etc can be installed through `install_dependencies.sh`.
