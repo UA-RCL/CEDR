@@ -454,7 +454,7 @@ Here, we will have a double nested loop, where the outer loop will traverse all 
 
 ### 5.3 EFT heuristic - Task-to-PE assignment
 
-Here, we will utilize a built-in function that does final checks before assigning the task to the given PE. Based on this assignment, it also handles the actual queue management and modification of any required field. Details of this function can be found [here](https://github.com/UA-RCL/CEDR/blob/master/src-api/scheduler.cpp#L17-L64). 
+Here, we will utilize a built-in function that does final checks before assigning the task to the given PE. Based on this assignment, it also handles the actual queue management and modification of any required field. Details of this function can be found [here](https://github.com/UA-RCL/CEDR/blob/tutorial/src-api/scheduler.cpp#L17-L64).
 
 ```C
     // Attempt to assign task on earliest finishing PE
@@ -555,7 +555,7 @@ int scheduleEFT(ConfigManager &cedr_config, std::deque<task_nodes *> &ready_queu
 
 ### 5.6 Adding EFT as a scheduling option
 
-Now, the only thing left is to ensure CEDR can run this function during scheduling events. To do this in the same [scheduler.cpp](scr-api/scheduler.cpp) file, we go to the end and update the [performScheduling](https://github.com/UA-RCL/CEDR/blob/master/src-api/scheduler.cpp#L460) function. In the function where `sched_policy` is checked, we add another `else if` segment that checks whether the scheduling policy is `EFT`. If it is, we will call the function we just created. 
+Now, the only thing left is to ensure CEDR can run this function during scheduling events. To do this in the same [scheduler.cpp](scr-api/scheduler.cpp) file, we go to the end and update the [performScheduling](https://github.com/UA-RCL/CEDR/blob/tutorial/src-api/scheduler.cpp#L406) function. In the function where `sched_policy` is checked, we add another `else if` segment that checks whether the scheduling policy is `EFT`. If it is, we will call the function we just created.
 
 ```C
 else if (sched_policy == "EFT") {
@@ -572,7 +572,7 @@ make -j
 
 ### 5.7 Enabling EFT for CEDR
 
-In the [daemon_config.json](daemon_config.json) file, we updated the ["Scheduler"](https://github.com/UA-RCL/CEDR/blob/master/daemon_config.json#L35) field to be "EFT" before running CEDR with the updated daemon config file.
+In the [daemon_config.json](daemon_config.json) file, we updated the ["Scheduler"](https://github.com/UA-RCL/CEDR/blob/tutorial/daemon_config.json#L35) field to be "EFT" before running CEDR with the updated daemon config file.
 
 ```JSON
     "Scheduler": "EFT",

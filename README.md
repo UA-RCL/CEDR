@@ -76,6 +76,7 @@ As mentioned above, there are two variations of CEDR: API-based and DAG-based. W
 
 Depending on the configuration desired, there are a few different guides that can be followed to get started, each in their own `GettingStarted.*.md` file.
 
+- Detailed API-based CEDR tutorial: [CEDR_tutorial.md](https://github.com/UA-RCL/CEDR/blob/tutorial/CEDR_tutorial.md)
 - API-based CEDR: [GettingStarted.API.md](GettingStarted.API.md)
 - Hand-crafted DAG-based CEDR: [GettingStarted.DAG.md](GettingStarted.DAG.md)
 - TraceAtlas DAG-based CEDR: [GettingStarted.TraceAtlas.md](GettingStarted.TraceAtlas.md)
