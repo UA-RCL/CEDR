@@ -5,7 +5,7 @@ Taken from https://sukhbinder.wordpress.com/2016/05/10/quick-gantt-chart-with-ma
 Intended for daemon-based execution with streaming enabled, and it plots all frames of a given application rather than just the first five frames
 """
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as font_manager
 from matplotlib.patches import Patch, Rectangle
@@ -119,7 +119,7 @@ def show_gantt_chart(proc_schedules):
     
     #font = font_manager.FontProperties(size='small')
     plt.show()
-    #plt.savefig("figure.png")
+    plt.savefig("gantt.png")
 
 def generate_argparser():
     parser = argparse.ArgumentParser(description="A tool for plotting Gantt charts from ZCU102 runtime")

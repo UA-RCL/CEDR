@@ -2,9 +2,10 @@ import csv
 import pandas as pd
 import argparse
 #import plotly.express as px
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib
 from mpl_toolkits import mplot3d
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib import cm
@@ -26,15 +27,15 @@ if __name__ == "__main__":
 
     ### Configuration specification ###
     CPUS = 3
-    FFTS = 8
+    FFTS = 0
     MMULTS = 0
     ZIPS = 0
     GPUS = 0
     WORKLOAD = 'High'
-    TRIALS = 3
-    schedlist = {'SIMPLE':1, 'MET':2, 'EFT':3, 'ETF':4,}
-    schedmarkerlist = {'SIMPLE':'o', 'MET':'o', 'EFT':'o', 'ETF':'o'}
-    schednamelist = ['RR', 'MET', 'EFT', 'ETF']
+    TRIALS = 2
+    schedlist = {'SIMPLE':1, 'MET':2, 'ETF':3}
+    schedmarkerlist = {'SIMPLE':'o', 'MET':'o', 'ETF':'o'}
+    schednamelist = ['RR', 'MET', 'ETF']
     #colorlist = {' Core 1':'green', ' Core 2': 'blue', ' Core 3': 'red', ' FFT 1':'black', ' MMULT 1': 'orange','ZIP 1: 'purple'}
     viridis = cm.get_cmap('tab10',10)
     #print(viridis(1))
@@ -164,4 +165,4 @@ if __name__ == "__main__":
     #plt.legend(fontsize=20, ncol=5, loc='upper center')
     ax.legend(markerscale=3, fontsize=20, ncol=5, loc='upper center')
     plt.show()
-    #plt.savefig("test.png",dpi=1200, papertype='letter')
+    plt.savefig("dse_sched.png",dpi=1200)

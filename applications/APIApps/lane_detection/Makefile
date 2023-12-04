@@ -2,7 +2,7 @@ INCLUDES = ../../../libdash
 RUNTIME_LIBDIR = ../../../build/libdash
 STANDALONE_LIBDIR = $(RUNTIME_LIBDIR)
 
-ifeq ($(ARCH), arm)
+ifeq ($(ARCH), aarch64)
 	CXX = aarch64-linux-gnu-g++
 	CC = aarch64-linux-gnu-gcc
 	RUNTIME_LIBDIR = ../../../../build-arm/libdash

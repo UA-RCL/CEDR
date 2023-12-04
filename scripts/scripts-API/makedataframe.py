@@ -35,7 +35,7 @@ def resource_util(FILENAME):
         start_dict = {}
         stop_dict = {}
         exectime_dict = {}
-        corelist = [' cpu1', ' cpu2', ' cpu3', ' fft1',' fft2',' fft3',' fft4',' fft5',' fft6', ' fft7', ' fft8', ' mmult1', ' mmult2', ' zip1', ' zip2']  # Edit here
+        corelist = [' cpu1', ' cpu2', ' cpu3']  # Edit here
         #print("Proc_schedule_keys : ", proc_schedules.keys())
         for core in corelist:
             if core in proc_schedules.keys():
@@ -178,16 +178,16 @@ if __name__ == '__main__':
 
     ############# Edit parameters here ####################
     CPUS=3
-    FFTS=1
-    MMULTS=1
+    FFTS=0
+    MMULTS=0
     ZIPS=0
     
-    SCHEDS=["SIMPLE", "MET", "EFT", "ETF"]
+    SCHEDS=["SIMPLE", "MET", "ETF"]
     
     if WORKLOAD == 'HIGH':
         # Use following INJ_RATES and PERIODS for High latency workload data
-        INJ_RATES=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000]
-        PERIODS=[101270, 50635, 33757, 25317, 20254, 16878, 14467, 12659, 11252, 10127, 5063, 3376, 2532, 2025, 1688, 1447, 1266, 1125, 1013, 921, 844, 779, 723, 675, 633, 596, 563, 533, 506]
+        INJ_RATES=[10, 20]
+        PERIODS=[1734, 2313]
     elif WORKLOAD == 'LOW':
         print('Low workload is not specified for this setup')
     else:
@@ -196,7 +196,7 @@ if __name__ == '__main__':
 
     INJ_COUNT=int(args.injectionRateCount)
     TRIALS=int(args.trial)
-    corelist = [' cpu1', ' cpu2', ' cpu3', ' fft1', ' mmult1']  # Edit here
+    corelist = [' cpu1', ' cpu2', ' cpu3']  # Edit here
 
     #######################################################
 
@@ -211,7 +211,7 @@ if __name__ == '__main__':
         for z in range (ZIPS,ZIPS+1): 
             for m in range (MMULTS,MMULTS+1):  # Edit the for loop for different types of resources
                 for f in range (FFTS,FFTS+1):
-                    for c in range (CPUS-1,CPUS):
+                    for c in range (0,CPUS):
                         for sched in SCHEDS:
                             for i in range(INJ_COUNT):
                                 row_to_write = []
@@ -231,9 +231,9 @@ if __name__ == '__main__':
 
                                 total_resource_util_dict = {}
                                 for t in range(TRIALS):
-                                    file_to_parse = BASEDIR+'/'+WORKLOAD+'/trial_'+str(t+1)+'/c'+str(c+1)+'_f'+str(f)+'_m'+str(m)+'_z'+str(z)+'_sched-'+sched+'-p'+str(PERIODS[i])+','+str(PERIODS[i])+'/timing_trace.log' # Edit here
-                                    sched_file_to_parse = BASEDIR+'/'+WORKLOAD+'/trial_'+str(t+1)+'/c'+str(c+1)+'_f'+str(f)+'_m'+str(m)+'_z'+str(z)+'_sched-'+sched+'-p'+str(PERIODS[i])+','+str(PERIODS[i])+'/schedule_trace.log' # Edit here
-                                    apprun_file_to_parse= BASEDIR+'/'+WORKLOAD+'/trial_'+str(t+1)+'/c'+str(c+1)+'_f'+str(f)+'_m'+str(m)+'_z'+str(z)+'_sched-'+sched+'-p'+str(PERIODS[i])+','+str(PERIODS[i])+'/appruntime_trace.log'
+                                    file_to_parse = BASEDIR+'/'+WORKLOAD+'/trial_'+str(t+1)+'/c'+str(c+1)+'_f'+str(f)+'_m'+str(m)+'_z'+str(z)+'_sched-'+sched+'-p'+str(PERIODS[i])+'/timing_trace.log' # Edit here
+                                    sched_file_to_parse = BASEDIR+'/'+WORKLOAD+'/trial_'+str(t+1)+'/c'+str(c+1)+'_f'+str(f)+'_m'+str(m)+'_z'+str(z)+'_sched-'+sched+'-p'+str(PERIODS[i])+'/schedule_trace.log' # Edit here
+                                    apprun_file_to_parse= BASEDIR+'/'+WORKLOAD+'/trial_'+str(t+1)+'/c'+str(c+1)+'_f'+str(f)+'_m'+str(m)+'_z'+str(z)+'_sched-'+sched+'-p'+str(PERIODS[i])+'/appruntime_trace.log'
                                     print(file_to_parse)
                                     # Call function on the file_to_parse
                                     running_cumu_appexecvalue, _, app_count = cumulative_exec_only(file_to_parse)

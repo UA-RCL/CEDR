@@ -89,7 +89,7 @@ extern "C" void DASH_FFT_flt_gpu(dash_cmplx_flt_type** input, dash_cmplx_flt_typ
     plan_fft = plan_fft2048;
   }
   else {
-	printf("Running fft with custom length!\n");
+	//printf("Running fft with custom length!\n");
   	cufftPlan1d(&plan_fft_custom, (*size), CUFFT_C2C, 1);
 	plan_fft = plan_fft_custom;
   }

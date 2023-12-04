@@ -19,6 +19,10 @@ RUN chmod u+x /install_dependencies.sh && \
   /install_dependencies.sh && \
   rm /install_dependencies.sh
 
+COPY requirements.txt /
+RUN pip3 install -r /requirements.txt && \
+  rm /requirements.txt
+
 WORKDIR /root/repository
 
 #VOLUME /home/user/repository

@@ -3,6 +3,12 @@ ARCH ?= x86
 LIBDASH_INC ?= ../../../libdash
 LIBDASH_LIB ?= ../../../build/libdash
 
+ifeq ($(ARCH), aarch64)
+	CXX = aarch64-linux-gnu-g++
+	CC = aarch64-linux-gnu-gcc
+	RUNTIME_LIBDIR = ../../../../build-arm/libdash
+endif
+
 INCLUDES = -I $(LIBDASH_INC)
 LIBS = -L $(LIBDASH_LIB)
 
