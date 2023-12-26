@@ -22,8 +22,8 @@
 
 // How are arrays like "estimated execution time" laid out
 // and what index do you use to get the value corresponding to a given resource type?
-enum api_types {DASH_FFT = 0, DASH_GEMM = 1, DASH_FIR = 2, DASH_SpectralOpening = 3, DASH_CIC = 4, DASH_ZIP = 5, DASH_BPSK = 6, DASH_QAM16 = 7, DASH_CONV_2D = 8, DASH_CONV_1D = 9, NUM_API_TYPES = 10};
-static const char *api_type_names[] = {"DASH_FFT", "DASH_GEMM", "DASH_FIR", "DASH_SpectralOpening", "DASH_CIC", "DASH_ZIP", "DASH_BPSK", "DASH_QAM16", "DASH_CONV_2D", "DASH_CONV_1D"};
+enum api_types {DASH_FFT = 0, DASH_GEMM = 1, DASH_FIR = 2, DASH_SpectralOpening = 3, DASH_CIC = 4, DASH_BPSK = 5, DASH_QAM16 = 6, DASH_CONV_2D = 7, DASH_CONV_1D = 8, NUM_API_TYPES = 9};
+static const char *api_type_names[] = {"DASH_FFT", "DASH_GEMM", "DASH_FIR", "DASH_SpectralOpening", "DASH_CIC", "DASH_BPSK", "DASH_QAM16", "DASH_CONV_2D", "DASH_CONV_1D"};
 static_assert(sizeof(api_type_names) / sizeof(char *) == api_types::NUM_API_TYPES, "API type enum is missing a string representation or enum is missing a value");
 
 static const std::map<std::string, api_types> api_types_map = {{api_type_names[api_types::DASH_FFT], api_types::DASH_FFT},
@@ -31,7 +31,6 @@ static const std::map<std::string, api_types> api_types_map = {{api_type_names[a
                                                                {api_type_names[api_types::DASH_FIR], api_types::DASH_FIR},
                                                                {api_type_names[api_types::DASH_SpectralOpening], api_types::DASH_SpectralOpening},
                                                                {api_type_names[api_types::DASH_CIC], api_types::DASH_CIC},
-                                                               {api_type_names[api_types::DASH_ZIP], api_types::DASH_ZIP},
                                                                {api_type_names[api_types::DASH_BPSK], api_types::DASH_BPSK},
                                                                {api_type_names[api_types::DASH_QAM16], api_types::DASH_QAM16},
                                                                {api_type_names[api_types::DASH_CONV_2D], api_types::DASH_CONV_2D},
@@ -46,15 +45,14 @@ static const std::map<std::string, precision_types> precision_types_map =
                                                               {{precision_type_names[precision_types::prec_flt], precision_types::prec_flt},
                                                                {precision_type_names[precision_types::prec_int], precision_types::prec_int}};
 
-enum resource_type { cpu = 0, fft = 1, mmult = 2, zip = 3, gpu = 4, NUM_RESOURCE_TYPES = 5 };
+enum resource_type { cpu = 0, fft = 1, mmult = 2, gpu = 3, NUM_RESOURCE_TYPES = 4 };
 // https://stackoverflow.com/a/9150607
-static const char *resource_type_names[] = {"cpu", "fft", "gemm", "zip", "gpu"};
+static const char *resource_type_names[] = {"cpu", "fft", "gemm", "gpu"};
 static_assert(sizeof(resource_type_names) / sizeof(char *) == resource_type::NUM_RESOURCE_TYPES, "Resource type enum is missing a string representation or enum is missing a value");
 
 static const std::map<std::string, resource_type> resource_type_map = {{resource_type_names[(uint8_t) resource_type::cpu], resource_type::cpu},
                                                                        {resource_type_names[(uint8_t) resource_type::fft], resource_type::fft},
                                                                        {resource_type_names[(uint8_t) resource_type::mmult], resource_type::mmult},
-                                                                       {resource_type_names[(uint8_t) resource_type::zip], resource_type::zip},
                                                                        {resource_type_names[(uint8_t) resource_type::gpu], resource_type::gpu}};
 
 struct cedr_barrier {

@@ -182,9 +182,8 @@ Modify the `daemon_config.json` file to set the number of CPUs to 3 (or any othe
 "Worker Threads": {
   "cpu": <b>3</b>,
   "fft": 0,
-  "mmult": 0,
-  "dap": 0,
-  "fec": 0
+  "gemm": 0,
+  "gpu": 0
 },
 </pre>
 
@@ -608,12 +607,132 @@ Once everything is completed, we will terminate CEDR with `kill_daemon`.
 ./kill_daemon
 ```
 
-## 6. Running Multiple Applications with CEDR on x86
 
-### 6.1 Compilation of Applications
+## 6. Introducing a New API Call
+
+In this section of the tutorial, we will demonstrate integration of a new API call to the CEDR. We will use `DASH_ZIP` API call as an example. 
+
+Navigate to libdash folder from [root directory](./).
+```bash
+cd libdash
+```
+
+Add the API function definitions to the `dash.h`.
+
+```C
+void DASH_ZIP_flt(dash_cmplx_flt_type* input_1, dash_cmplx_flt_type* input_2, dash_cmplx_flt_type* output, size_t size, zip_op_t op);
+void DASH_ZIP_flt_nb(dash_cmplx_flt_type** input_1, dash_cmplx_flt_type** input_2, dash_cmplx_flt_type** output, size_t* size, zip_op_t* op, cedr_barrier_t* kernel_barrier);
+
+void DASH_ZIP_int(dash_cmplx_int_type* input_1, dash_cmplx_int_type* input_2, dash_cmplx_int_type* output, size_t size, zip_op_t op);
+void DASH_ZIP_int_nb(dash_cmplx_int_type** input_1, dash_cmplx_int_type** input_2, dash_cmplx_int_type** output, size_t* size, zip_op_t* op, cedr_barrier_t* kernel_barrier);
+```
+
+There 4 different function definitions here:
+  1. DASH_ZIP_flt: Supports blocking ZIP calls for `dash_cmplx_flt_type`
+  2. DASH_ZIP_flt_nb: Supports non-blocking ZIP calls for `dash_cmplx_flt_type`
+  3. DASH_ZIP_int: Supports blocking ZIP calls for `dash_cmplx_int_type`
+  4. DASH_ZIP_int_nb: Supports non-blocking ZIP calls for `dash_cmplx_int_type`
+
+Add supported ZIP operation enums to `dash_types.h`
+```C
+typedef enum zip_op {
+  ZIP_ADD = 0,
+  ZIP_SUB = 1,
+  ZIP_MULT = 2,
+  ZIP_DIV = 3
+} zip_op_t;
+```
+
+Add CPU implementation of the ZIP to [libdash/cpu](libdash/cpu/) `zip.cpp`. For simplicity, we just copy the original implementation.
+```bash
+cp original_files/zip.cpp libdash/cpu/
+```
+
+In `zip.cpp`, we also have the `enqueue_kernel` call in the API definition, which is how the task for this API will be sent to CEDR. A prototype of the `enqueue_kernel` function is given in line 12, and `enqueue_kernel` is used in non-blocking versions of the function (lines 83 and 113). The prototype is the same for all the APIs created for CEDR. The first argument has to be the function name, the second argument has to be the precision to be used, and the third argument shows how many inputs are needed for the calling function (for ZIP, this is 6). Now let's look at the ZIP-specific `enqueue_kernel` call.
+
+```C
+enqueue_kernel("DASH_ZIP", "flt", 6, input_1, input_2, output, size, op, kernel_barrier);
+```
+
+In this sample `enqueue kernel` call, we have 4 important portions:
+  * ***"DASH_ZIP"***: Name of the API call
+  * ***"flt"***: Type of the inputs on the API call
+  * ***6***: Number of variables for the API call
+  * Variables:
+    * ***input_1***: First input of the ZIP
+    * ***input_2***: Second input of the ZIP
+    * ***output***: Output of the ZIP
+    * ***size***: Array size for inputs and output
+    * ***op***: ZIP operation type (ADD, SUB, MUL, or DIV)
+    * ***kernel_barrier***: Contains configuration information of barriers for blocking and non-blocking implementation
+
+In the `zip.cpp`, we need to fill the bodies of the four function definitions that are used so the application will call `enqueue_kernel` properly and hand off the task to CEDR for scheduling:
+
+1. DASH_ZIP_flt
+2. DASH_ZIP_flt_nb
+3. DASH_ZIP_int
+4. DASH_ZIP_int_nb
+
+We also implement two more functions, which contains implementation of CPU-based ZIP operations. Functions are created with `_cpu` suffix so that CEDR can identify the functions correctly for CPU execution:
+
+1. DASH_ZIP_flt_cpu: `dash_cmplx_flt_type`
+2. DASH_ZIP_int_cpu: `dash_cmplx_int_type`
+
+Having included API implementation, we should introduce the new API call to the system by updating CEDR header file ([./src-api/include/header.hpp](src-api/include/header.hpp)):
+
+<pre>
+enum api_types {DASH_FFT = 0, DASH_GEMM = 1, DASH_FIR = 2, DASH_SpectralOpening = 3, DASH_CIC = 4, DASH_BPSK = 5, DASH_QAM16 = 6, DASH_CONV_2D = 7, DASH_CONV_1D = 8, <b>DASH_ZIP = 9,</b> NUM_API_TYPES = <b>10</b>};
+
+static const char *api_type_names[] = {"DASH_FFT", "DASH_GEMM", "DASH_FIR", "DASH_SpectralOpening", "DASH_CIC", "DASH_BPSK", "DASH_QAM16", "DASH_CONV_2D", "DASH_CONV_1D"<b>, "DASH_ZIP"</b>};
+...
+static const std::map<std::string, api_types> api_types_map = {{api_type_names[api_types::DASH_FFT], api_types::DASH_FFT},
+                                                               {api_type_names[api_types::DASH_GEMM], api_types::DASH_GEMM},
+                                                               {api_type_names[api_types::DASH_FIR], api_types::DASH_FIR},
+                                                               {api_type_names[api_types::DASH_SpectralOpening], api_types::DASH_SpectralOpening},
+                                                               {api_type_names[api_types::DASH_CIC], api_types::DASH_CIC},
+                                                               {api_type_names[api_types::DASH_BPSK], api_types::DASH_BPSK},
+                                                               {api_type_names[api_types::DASH_QAM16], api_types::DASH_QAM16},
+                                                               {api_type_names[api_types::DASH_CONV_2D], api_types::DASH_CONV_2D},
+                                                               {api_type_names[api_types::DASH_CONV_1D], api_types::DASH_CONV_1D},
+                                                              <b>{api_type_names[api_types::DASH_ZIP], api_types::DASH_ZIP}</b>};
+</pre>
+
+Navigate to the build folder, re-generate the files, and check the `libdash-rt.so` shared object to verify the new ZIP-based function calls.
+```bash
+cd ../build
+cmake ..
+make -j $(nproc)
+nm -D libdash-rt/libdash-rt.so | grep -E '*_ZIP_*'
+```
+
+To verify, build lane detection application which utilizes ZIP API calls.
+```bash
+cd applications/APIApps/lane_detection/
+make fft_nb.so
+cp track_nb.so image.png ../../../build/
+```
+
+Now, launch CEDR and submit lane detection application.
+```bash
+cd ../../../build/
+rm -rf log_dir/*
+./cedr -c ./daemon_config.json -l NONE &
+./sub_dag -a ./track_nb.so -n 1 -p 0
+```
+
+Let's check the `timing_trace.log` for ZIP API calls.
+```bash
+cat log_dir/experiment0/timing_trace.log | grep -E '*ZIP*'
+```
+
+If you have a C++ based serial implementation of key kernels in your application, you can add your API call following the explanations in this section and replace your C++ kernel code with newly introduced API call following the Section 3.
+
+## 7. Running Multiple Applications with CEDR on x86
+
+### 7.1 Compilation of Applications
 In this section, we will demonstrate CEDR's ability to manage dynamically arriving applications. Assuming you already have built CEDR following the previous steps, we will directly delve into compiling and running two new applications that are lane detection and pulse doppler.
 
-Firstly, navigate to lane detection folder from the root folder of the repository, compile it for x86 and move shared object and input files to `build` folder for running with CEDR.
+Firstly, navigate to lane detection folder from the root folder of the repository, compile it for x86 and move shared object and input files to `build` folder for running with CEDR. (If you have already done this for the previous section, you don't have to compile the lane detection once more.)
 
 ```bash
 cd applications/APIApps/lane_detection/
@@ -630,7 +749,7 @@ cp -r pulse_doppler-nb-x86.so input/ ../../../build
 mkdir ../../../build/output
 ```
 
-### 6.2 Running the Applications with CEDR
+### 7.2 Running the Applications with CEDR
 
 Now that we have all binaries and input files ready, we can proceed with running these applications with CEDR. First, navigate to `build` directory.
 
@@ -647,9 +766,9 @@ Then, launch CEDR with your desired configuration and submit both applications w
 
 Observe the [output image of lane detection](./build/output_fft.png) and the [shift and time delay](./build/output/pulse_doppler_output.txt) calculated by pulse doppler.
 
-## 7. GPU Based SoC Experiment (Nvidia Jetson AGX Xavier)
+## 8. GPU Based SoC Experiment (Nvidia Jetson AGX Xavier)
 
-### 7.1 Building CEDR
+### 8.1 Building CEDR
 Firstly, we need to connect to the Nvidia Jetson board through ssh connection. 
 ```bash
 ssh <user-name>@<jetson-ip>
@@ -673,7 +792,7 @@ cmake -DLIBDASH_MODULES="GPU" ../
 make -j -$(nproc)
 ```
 
-### 7.2 Compilation
+### 8.2 Compilation
 
 Now, we can compile the lane detection application running the following commands. This creates an executable shared object that we will move to `build` folder along with input image to run the `lane_detection`:
 ```bash
@@ -689,7 +808,7 @@ make nonblocking
 cp -r pulse_doppler-nb-x86.so input/ ../../../build/
 ```
 
-### 7.3 Running the Applications with CEDR
+### 8.3 Running the Applications with CEDR
 
 Now, we need to go back to `build` folder and move `daemon_config.json` to it. Also, create a `output` folder for storing `pulse doppler` output:
 ```bash
@@ -749,7 +868,7 @@ xdg-open output_fft.png
 cat output/pulse_doppler_output.txt
 ```
 
-## 8. FPGA Based SoC Experiment (ZCU102 MPSoC)
+## 9. FPGA Based SoC Experiment (ZCU102 MPSoC)
 
 (Conv2d (accelerator) is not included in HCW release.)
 Moving on to the aarch64-based build for ZCU102 FPGA with accelerators. We'll start by building CEDR itself. This time we will use the [toolchain](toolchains/aarch64-linux-gnu.toolchain.cmake) file for cross-compilation. If you are on Ubuntu 22.04, the toolchain requires running inside the docker container. (Self note: Be careful about platform.h)
@@ -784,7 +903,7 @@ nm -D libdash-rt/libdash-rt.so | grep -E '*_fft$|*_gemm$'
 
 After this, we can go to build our application using cross-compilation for aarch64
 
-### 8.1 Cross-compilation
+### 9.1 Cross-compilation
 
 Assuming you came here after building the lane detection for x86_64, we will directly move to compile the lane detection for aarch64. First, navigate to [applications/APIApps/lane_detection](applications/APIApps/lane_detection) folder. Then run the following command to build the executable for aacrh64:
 
@@ -812,7 +931,7 @@ ARCH=aarch64 make nonblocking
 cp -r pulse_doppler-nb-aarch64.so input/ ../../../build-arm
 ```
 
-### 8.2 Running API-based CEDR on ZCU102
+### 9.2 Running API-based CEDR on ZCU102
 
 Now, change your working directory to the `build-arm` directory. Before going into the zcu102 first copy the [daemon_config.json](daemon_config.json) file to the `build-arm` directory and create an output folder. From the build-arm directory, run:
 
@@ -891,6 +1010,6 @@ xdg-open output_fft.png
 cat output/pulse_doppler_output.txt
 ```
 
-## 9. Introducing a New API Call
+## 10. Contact
 
-Will be published in upcoming weeks.
+For any questions and bug report, please email to [suluhan@arizona.edu](mailto:suluhan@arizona.edu).

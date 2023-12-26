@@ -13,7 +13,6 @@ endif()
 set(LIBDASH_GPU_SRCS 
   ${CMAKE_CURRENT_SOURCE_DIR}/gpu_fft.cu
   ${CMAKE_CURRENT_SOURCE_DIR}/gpu_gemm.cu
-  ${CMAKE_CURRENT_SOURCE_DIR}/gpu_zip.cu
   ${CMAKE_CURRENT_SOURCE_DIR}/gpu_conv2d.cu
   ${COMMON_DMA_DIRECTORY}/dma.cpp
 )

@@ -16,7 +16,7 @@ find_library(GSLCBLAS libgslcblas.a REQUIRED)
 if (${CEDR_BUILD})
   message(STATUS "Building libdash for use with CEDR")
   
-  set(ALL_LIBDASH_MODULES FFT GEMM ZIP GPU)
+  set(ALL_LIBDASH_MODULES FFT GEMM GPU)
   set(LIBDASH_MODULES "" CACHE STRING "Hardware-acceleration modules to enable in libdash")
   set(CACHE LIBDASH_MODULES PROPERTY STRINGS ${ALL_LIBDASH_MODULES})
 
