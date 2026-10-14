@@ -1,0 +1,26 @@
+{
+  "name": "CEDR Tutorial",
+  "image": "uofarcl/cedr:tutorial",
+
+  "workspaceFolder": "/workspaces/CEDR",
+  "remoteUser": "root",
+
+  "hostRequirements": {
+    "cpus": 2
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "workbench.editorAssociations": {
+          "*.md": "vscode.markdown.preview.editor"
+        }
+      },
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "ms-python.python"
+      ]
+    }
+  }
+}
