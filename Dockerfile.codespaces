@@ -1,0 +1,33 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /root
+
+# Basic development utilities
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    lsb-release \
+    wget \
+    git \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install CEDR dependencies, including cross-compilers
+COPY install_dependencies.sh /tmp/install_dependencies.sh
+
+RUN chmod +x /tmp/install_dependencies.sh \
+    && /tmp/install_dependencies.sh \
+    && rm /tmp/install_dependencies.sh
+
+# Install Python packages compatible with Ubuntu 20.04 / Python 3.8
+RUN python3 -m pip install --no-cache-dir \
+    "numpy==1.23.5" \
+    "matplotlib==3.5.3" \
+    "pandas==1.5.3" \
+    "ipython==7.34.0"
+
+ENV DEBIAN_FRONTEND=dialog
+
+# Codespaces will mount the CEDR repository here
+WORKDIR /workspaces/CEDR

@@ -1,6 +1,6 @@
 {
   "name": "CEDR Tutorial",
-  "image": "uofarcl/cedr:tutorial",
+  "image": "uofarcl/cedr:tutorial20",
 
   "workspaceFolder": "/workspaces/CEDR",
   "remoteUser": "root",
